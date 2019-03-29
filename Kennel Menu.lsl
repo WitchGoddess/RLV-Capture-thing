@@ -1,5 +1,3 @@
-string curtains="-";
-
 //-----Link Channels-----//
 integer DOOR_BUTTON     = 11008;
 integer TIMER           = 11009;
@@ -41,11 +39,11 @@ integer Seconds = 60;
 string PingFromRelay;
 key ownerk;
 string OwnerB = "-";
-string DoorB = "Open";
+string ToyModeB = "Un-Toymode";
 string LockB = "-";
-string Timerb = "Timer"; //Was hidden as -  *Dav
+string Timerb = "-";
 string Keysb = "-";
-string rlvb = "RLV";
+string InvisB="-";
 key hasKey_key;
 string hasKey;
 
@@ -94,8 +92,8 @@ dialogMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     captureChannel = llListen( CAPTURE_CHANNEL, "", door_operator, "");
-    list KennelMenu = [DoorB, LockB, OwnerB, Keysb, Timerb, rlvb, "Capture", curtains];
-    llDialog(door_operator, "Cage Control Menu:\n\n(Menu will Timeout in 60 Seconds.)", KennelMenu, MENU_CH);
+    list KennelMenu = [ToyModeB, LockB, OwnerB, Keysb, Timerb, "Capture", InvisB];
+    llDialog(door_operator, "Plush Toy Control Menu:\n\n(Menu will Timeout in 60 Seconds.)", KennelMenu, MENU_CH);
 }
 
 ownerMenu(key door_operator){
@@ -105,12 +103,12 @@ ownerMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     menuChannel = llListen ( CAPTURE_CHANNEL, "", door_operator, "");
-    list OwnerMenu = ["Reset","Set Open","Set Closed","Back..."];
-    llDialog(door_operator, "Cage Control Menu:.", OwnerMenu, MENU_CH);
+    list OwnerMenu = ["Reset","Back..."];
+    llDialog(door_operator, "Plush Toy Control Menu:.", OwnerMenu, MENU_CH);
 }
 
 Unlock(){
-    DoorB = "Open";
+    ToyModeB = "Un-Toymode";
     LockB = "Lock";
     Timerb = "Timer";
     Kennel_Locked = FALSE;
@@ -122,7 +120,6 @@ Unlock(){
     hasKey_key = NULL_KEY;
     hasKey = "";
     Keysb = "-";
-    rlvb = "-";
     llPlaySound(door_unlock,1);
     llMessageLinked(LINK_SET, TIMER,"Unlock", NULL_KEY);
     llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
@@ -132,13 +129,12 @@ Unlock(){
 }
 
 lock(){
-    DoorB = "-";
+    ToyModeB = "-";
     LockB = "Unlock";
     Timerb = "Timer";
     if (Kennel_Locked==FALSE) llPlaySound(door_lock,1);
     Kennel_Locked = TRUE;
     PetAccess = FALSE;
-    rlvb = "RLV";
     llMessageLinked(LINK_SET, SENSOR, "ON", NULL_KEY);
     llMessageLinked(LINK_SET, RLV, "Lock", NULL_KEY);
     llMessageLinked(LINK_SET, DOOR_BUTTON, "Lock", NULL_KEY);
@@ -158,7 +154,7 @@ capture(string name){
         integer poseballlink = getLinkWithName("cageframe");
 //        relay(sensorKey, "@sit:" + (string)llGetKey() + "=force");
         relay(sensorKey, "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
-        DoorB = "Open";
+        ToyModeB = "Un-Toymode";
         Timerb = "Timer";
     }
 }
@@ -167,10 +163,10 @@ relay(key avatar, string message){
     llSay(RELAY_CHANNEL, llGetObjectName() + "," + (string) avatar + "," + message);
 }
 
-moveCurtains(){
-//    float alpha=llList2Float(llGetLinkPrimitiveParams(5,[PRIM_COLOR,0]),1);
-//    if (alpha==0.0) llSetLinkAlpha(5,1,0);
-//    else llSetLinkAlpha(5,0,0);
+makeInvis(){
+    float alpha=llList2Float(llGetLinkPrimitiveParams(5,[PRIM_COLOR,0]),1);
+    if (alpha==0.0) llSetLinkAlpha(5,1,0);
+    else llSetLinkAlpha(5,0,0);
 }
 
 default{
@@ -184,7 +180,7 @@ default{
         linkCount=llGetObjectPrimCount(llGetKey());
         llListen(CAPTURE_CHANNEL, "", NULL_KEY, "");
         llMessageLinked(LINK_SET, DOOR_BUTTON, "Unlock", NULL_KEY);
-        llMessageLinked(LINK_SET, DOOR_BUTTON, "Close", NULL_KEY);
+        llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);
         llMessageLinked(LINK_SET, KEY, "key_hidden", NULL_KEY);
         llOwnerSay("Cage Reset");
     }
@@ -221,9 +217,9 @@ default{
                 }
                 else{
                     if(Kennel_Locked == TRUE)                        {
-                        llInstantMessage(llDetectedKey(0), "You scratch at the cage door but find it's locked. Maybe you can find someone to let you out...:).");
+                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate. Owner test DEBUG");
                         if(Timer_Running == TRUE){
-                            llWhisper(0,"Cage will unlock when the timer expires.");
+                            llWhisper(0,"You will become animated again once timer expires. Owner test DEBUG");
                         }
                     }
                     else{
@@ -240,11 +236,11 @@ default{
                         dialogMenu(door_operator);
                     }
                     else if(PetAccess == FALSE){
-                        llInstantMessage(llDetectedKey(0), "You scratch at the cage door but find it's locked. Maybe you can find someone to let you out...:).");
+                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate. Not Owner test DEBUG");
                         if(Timer_Running == TRUE)
                         {
                             timer_check();
-                            llWhisper(0,"Cage will unlock when the timer expires.");
+                            llWhisper(0,"You will become animated again once timer expires. Not Owner test DEBUG");
                         }
                     }
                 }
@@ -260,7 +256,7 @@ default{
                             dialogMenu(door_operator);
                         }
                         else{
-                            llWhisper(0,"This door has been locked and " + hasKey + " has taken the key. Only them or the cage's owner can unlock it.  (Or it will auto-unlock if a timer is running when it expires.)");
+                            llWhisper(0,"This plush toy has been locked and " + hasKey + " has taken the key. Only them or the toy's owner can unlock it.  (Or it will auto-unlock if a timer is running when it expires.)");
                         }
                     }
                 }
@@ -288,47 +284,44 @@ default{
                     ownerMenu(door_operator);
                 else llInstantMessage(id,"You are not the owner.");
             }
-            else if (command==curtains){
-                moveCurtains();
+            else if (command==Invis){
+                makeInvis();
             }
             else if(command == "Back..."){
                 dialogMenu(door_operator);
             }
-            else if(command == "Close"){
-                DoorB = "Open";
+            else if(command == "ToyMode"){
+                ToyModeB = "Un-Toymode";
                 LockB = "Lock";
                 Timerb = "Timer";
                 llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Close", NULL_KEY);
+                llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);
                 dialogMenu(door_operator);
             }
-            else if(command == "Open"){
+            else if(command == "Un-ToyMode"){
                 PetKeys = [];
-                DoorB = "Close";
+                ToyModeB = "Toymode";
                 LockB = "-";
-                Timerb = "Timer"; //Was hidden as -  *Dav
+                Timerb = "-";
                 Keysb = "-";
                 llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Open", NULL_KEY);
+                llMessageLinked(LINK_SET, DOOR_BUTTON, "Un-ToyMode", NULL_KEY);
                 dialogMenu(door_operator);
             }
             else if(command == "Lock"){
-                llInstantMessage(door_operator,"Click Panel again for RLV, Timer and Key options.");
+                llInstantMessage(door_operator,"Touch the plush again for Lock, Timer and Key options.");
                 lock();
             }
             else if(command == "Unlock"){
                 Unlock();
                 dialogMenu(door_operator);
             }
-            else if(message == "RLV"){
-                llMessageLinked(LINK_SET, RLV, "RLV_menu" + "^" + (string)door_operator, NULL_KEY);
-            }
             else if(message == "Take Key"){
                 hasKey_key = door_operator;
                 hasKey = llKey2Name(door_operator);
                 llMessageLinked(LINK_SET, KEY, "key_taken", NULL_KEY);
                 llMessageLinked(LINK_SET, RLV, "key_taken" + "^" + (string)door_operator, NULL_KEY);
-                llWhisper(0,name + " has taken the door key, only them or the cage's owner can unlock it now (or if a timer is set, it will auto-unlock when the timer expires.)");
+                llWhisper(0,name + " has taken the key, only them or the owner can unlock it now (or if a timer is set, it will auto-unlock when the timer expires.)");
                 Key_Taken = TRUE;
                 Keysb = "Return Key";
                 dialogMenu(door_operator);
@@ -337,7 +330,7 @@ default{
                 string name = llKey2Name(door_operator);
                 llMessageLinked(LINK_SET, KEY, "key_available", NULL_KEY);
                 llMessageLinked(LINK_SET, RLV, "key_returned" + "^" + (string)door_operator, NULL_KEY);
-                llWhisper(0,name + " has returned the door key, anyone outside the cage may unlock it if they choose.");
+                llWhisper(0,name + " has returned the key, anyone unlock it if they choose.");
                 Key_Taken = FALSE;
                 hasKey_key = NULL_KEY;
                 hasKey = "";
@@ -346,12 +339,6 @@ default{
             }
             else if(command == "Reset" && id==llGetOwner()){
                 kennelReset();
-            }
-            else if (command == "Set Open" && id==llGetOwner()){
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "setOpen", NULL_KEY);
-            }
-            else if (command == "Set Closed" && id==llGetOwner()){
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "setClosed", NULL_KEY);                
             }
             else if(message == "Timer"){
                 llMessageLinked(LINK_SET, TIMER,"Timer" + MSG_SEP + (string)door_operator, NULL_KEY);
@@ -389,7 +376,7 @@ default{
                 string escaped_pet = llKey2Name(escapee);
                 
                 if(Key_Taken == TRUE){
-                    llInstantMessage(hasKey_key,escaped_pet + " has escaped from the cage.");
+                    llInstantMessage(hasKey_key,escaped_pet + " has escaped.");
                 }
             }
         }
@@ -437,10 +424,10 @@ default{
                 llSetTimerEvent(0);
                 Unlock();
                 PetKeys = [];
-                DoorB = "Close";
+                ToyModeB = "Toymode";
                 LockB = "-";
                 Timerb = "-";
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Open", NULL_KEY);
+                llMessageLinked(LINK_SET, DOOR_BUTTON, "Un-ToyMode", NULL_KEY);
             }
         }
     }
@@ -449,14 +436,14 @@ default{
         integer poseballlink = getLinkWithName("cageframe");
         if (change & CHANGED_LINK){
             if (linkCount!=llGetObjectPrimCount(llGetKey())){
-                llOwnerSay("Linked prim have changed.  Resetting cage.");
+                llOwnerSay("Linked prim have changed.  Resetting.");
                 kennelReset();
             }
 //            if (llAvatarOnLinkSitTarget(LINK_ROOT)!=NULL_KEY){
             if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
                 llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
                 llSleep(0.5);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Close", NULL_KEY);        
+                llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);        
                 lock();
                 llUnSit(llAvatarOnLinkSitTarget(LINK_ROOT));
             }
