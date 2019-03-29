@@ -90,7 +90,7 @@ posCheck(){
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
                 cageRezzed = FALSE;
-                llMessageLinked(LINK_SET, RLV, "Relock^" + (string)Pet, NULL_KEY); 
+                llMessageLinked(LINK_SET, RLV, "Relock" + (string)Pet, NULL_KEY); 
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
             }
