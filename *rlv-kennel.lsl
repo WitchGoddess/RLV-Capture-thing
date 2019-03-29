@@ -14,7 +14,8 @@ key nameKey;
 key door_operator;
 
 list PetKeys;
-list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n","@edit=y","@rez=y","@addoutfit=y","@remoutfit=y","@fartouch=y"];
+list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n","@edit=n","@rez=n","@addoutfit=n","@remoutfit=n","@fartouch:3=n"];
+//Possible additions @camdistmax:0=n (force mouselook only), @camunlock=n (only disallow freecam), @chatnormal=n (can only whisper), @sendgesture=n (disallow gestures), @touchall=n (disallow touch at all), @touchworld=n (disallow touching anything but hud), @showworldmap=n, @showminimap=n, @showloc=n, "@shownames:"+ownerk+"=n", @showhovertextworld=n, 
 
 integer checkingRLV;
 integer RLV_detected;
