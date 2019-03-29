@@ -364,12 +364,12 @@ default
                 llListenRemove(Timer_CHANNEL_LS);
             }
         }
-        else if (num == DOOR_BUTTON && command=="Lock"){
-            if (releaseTime<300){
-                nameKey=NULL_KEY;
-                releaseTime = 0; //changed from 300 to 0 so 'lock' can simply lock without a timer *Dav
-                startTimer();
-            }
-        }
+        //else if (num == DOOR_BUTTON && command=="Lock"){
+        //    if (releaseTime<300){
+        //        nameKey=NULL_KEY;
+        //        releaseTime = 300;
+        //        startTimer();
+        //    }
+        //}
     }
 }
