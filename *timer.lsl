@@ -1,375 +1,238 @@
-//-----Link Channels-----//
+integer RELAY_CHANNEL   = -1812221819;
 integer SENSOR          = 136;
 integer TIMER           = 11009;
 integer BACK            = 11010;
+integer RLV             = 11012;
+integer KEY_LIST        = 11014;
 integer DOOR_BUTTON     = 11008;
-integer LISTENER_TIMER2 = 11012;
 
-string MSG_SEP = "^";
+integer STATUS_NORMAL   = 0;
+integer STATUS_OFFLINE  = 1;
+integer STATUS_ESCAPED  = 2;
+integer cageRezzed      = FALSE;
+string  TimerRunning    = "Stopped";
+float   timerTick       = 2;
 
-key ownerk;
-key nameKey;
+list RequestID;
+list RequestAV;
 
-string HideTimerb = "HideTimer";
-integer timerHidden = FALSE;
-string HideTimer = "*Timer is Displayed when its running.";
+key primForce = NULL_KEY;
+vector petLoc;
+vector offset = <0.0,0.0,1.0>;
 
-//-----Timer-----//
-integer slTimer = TRUE;
-string number;
-string timeword;
-integer time;
-integer Timer_CHANNEL = 0;
-integer Button_CHANNEL = 0;
-integer Timer_CHANNEL_LS;
-integer Button_CHANNEL_LS;
-integer releaseTime;
-integer lastTimeCheck;
-integer timerRunning;
-string timerState = "Timer Stopped:";
+vector upperRight;
+vector lowerLeft;
 
-string DisplayTime(integer seconds)
-{
-    integer hours;
-    integer minutes;
-            
-    hours = seconds / 3600;
-    seconds = seconds - (hours * 3600);
-    minutes = seconds / 60;
-    seconds = seconds - (minutes * 60);
+integer getLinkWithName(string name) {
+    integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
+    integer x = llGetNumberOfPrims() + i; // [0, 1) or [1, llGetNumberOfPrims()]
+    for (; i < x; ++i)
+        if (llGetLinkName(i) == name) 
+            return i; // Found it! Exit loop early with result
+    return -1; // No prim with that name, return -1.
+}
+
+posCheck(){
+    integer length = llGetListLength(PetKeys);
+    if(length != (integer)0){
+        if(TimerRunning == "Running"){
+            integer AVStat = llListFindList(PetStatus, [0]);
+            if(AVStat == (integer)-1){
+                llMessageLinked(LINK_SET, TIMER, "Pause", NULL_KEY);
+                llWhisper(0,"Timer Paused.");
+                TimerRunning = "Paused";
+            }
+        }
+        else if(TimerRunning == "Paused"){
+            integer AVStat = llListFindList(PetStatus, [0]);
+            if(AVStat != (integer)-1){
+                llMessageLinked(LINK_SET, TIMER, "Resume", NULL_KEY);
+                llWhisper(0,"Timer Resumed.");
+                TimerRunning = "Running";
+            }
+        }
+    }
+    integer x;
+    TempPetKeys = [];
+    TempPetStatus = [];
+    TempPetKeys = PetKeys;
+    TempPetStatus = PetStatus;
     
-    return((string)hours + "h:" + (string)minutes + "m:" + (string)seconds + "s");
-}
-
-//-----Channel Maker-----//
-TimerButton_CHANNEL()
-{
-    if(Timer_CHANNEL == 0);
-    {
-        do
-        {
-            Timer_CHANNEL = ((integer) llFrand(3) - 1) * ((integer) llFrand(2147483647)); 
+    for (x = 0; x < length; x++){
+        key Pet = llList2Key(PetKeys, x);
+        string name = llKey2Name(Pet);
+        integer status = llList2Integer(PetStatus, x);
+        
+        if(status == STATUS_NORMAL){
+            vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
+            pos = (pos - llGetRootPosition()) / llGetRootRotation();
+            
+            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
+               pos.y > lowerLeft.y && pos.y < upperRight.y &&
+               pos.z > lowerLeft.z && pos.z < upperRight.z){}
+            else{
+                llSleep(5.0);
+                RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
+                RequestAV += [Pet];
+            }
         }
-        while(Timer_CHANNEL == 0);
-    }
-    if(Button_CHANNEL == 0);
-    {
-        do
-        {
-         Button_CHANNEL = ((integer) llFrand(3) - 1) * ((integer) llFrand(2147483647)); 
+        else if(status == STATUS_OFFLINE){
+            RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
+            RequestAV += [Pet];
         }
-        while(Button_CHANNEL == 0);
-    }
-}
-
-timerMenu(key nameKey)
-{
-    Timer_CHANNEL = 0;
-    Button_CHANNEL = 0;
-    TimerButton_CHANNEL();
-    Button_CHANNEL_LS = llListen(Button_CHANNEL, "", nameKey, "");
-    Timer_CHANNEL_LS = llListen( Timer_CHANNEL, "", nameKey, "");
-    llMessageLinked(LINK_SET, LISTENER_TIMER2, "Timeout" + "^" + "60", NULL_KEY);
-    list tmr = [HideTimerb, "Main...", "-", "Add", "Remove", "Clear", "Start", "Stop", "Refresh"];
-    llDialog(nameKey, "(Menu will Timeout in 60 Seconds).\n*" + timerState + "  " + DisplayTime(releaseTime) + "\n\n" + HideTimer + "\n\nClick Refresh to refresh the timer above.", tmr, Button_CHANNEL);
-}
-
-addMenu()
-{
-    list tmr1 = ["Back...", "Add 5 Mins", "Add 15 Mins", "Add 30 Mins", "Add 1 Hour", "Add 2 Hours", "Add 5 Hours", "Add 10 Hours", "Add 24 Hours", "Start", "Add 7 Days", "Add 2 Weeks"];
-    llDialog(nameKey, "How much time would you like to add to the Timer?\n\n" + timerState + "  " + DisplayTime(releaseTime), tmr1, Timer_CHANNEL);
-}
-
-remMenu()
-{
-    list tmr1 = ["Back...", "- 5 Mins", "- 15 Mins", "- 30 Mins", "- 1 Hour", "- 2 Hours", "- 5 Hours ", "- 10 Hours", "- 24 Hours", "Start", "- 7 Days", "- 2 Weeks"];
-    llDialog(nameKey, "How much time would you like to remove from the Timer?\n\n" + timerState + "  " + DisplayTime(releaseTime), tmr1, Timer_CHANNEL);
-}
-
-timing(list messageList)
-{
-    string HMW = llList2String(messageList, 2);
-    string timePrefix = llGetSubString(HMW, 0, 0);
-    //llOwnerSay(timePrefix);
-    if(timePrefix == "M")
-    {
-        time = llList2Integer(messageList, 1);
-        time = (time * 60);
-    }
-    else if(timePrefix == "H")
-    {
-        time = llList2Integer(messageList, 1);
-        time = (time * 3600);
-    }
-    else if(timePrefix == "D")
-    {
-        time = llList2Integer(messageList, 1);
-        time = (time * 86400);
-    }
-    else if(timePrefix == "W")
-    {
-        time = llList2Integer(messageList, 1);
-        time = (time * 604800);
-    }
-}
-
-startTimer(){
-    if(releaseTime > 0){
-        lastTimeCheck = llGetUnixTime();
-        llSetTimerEvent(5);
-        timerRunning = 1;
-        timerState = "Timer Running:";
-        llMessageLinked(LINK_SET, SENSOR, "TimerStarted", NULL_KEY);
-        if(timerHidden == FALSE){
-            llSetText(DisplayTime(releaseTime), <1,1,1>, 1.0);
-        }
-        else if (timerHidden == TRUE){
-            llWhisper(0,"Timer is Hidden...");
-            llSetText(" ", <1,1,1>, 1.0);
-        }
-        if(nameKey!=NULL_KEY && nameKey == ownerk){
-            llMessageLinked(LINK_SET, BACK, "Owner_Locked", NULL_KEY);
-        }
-        else if(nameKey!=NULL_KEY){
-            llMessageLinked(LINK_SET, BACK, "Sub_Locked", NULL_KEY);
+        else if(status == STATUS_ESCAPED){   
+            vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
+            vector zeroPos = <0.00000, 0.00000, 0.00000>;
+            petLoc = pos;
+            pos = (pos - llGetRootPosition()) / llGetRootRotation();
+            
+            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
+               pos.y > lowerLeft.y && pos.y < upperRight.y &&
+               pos.z > lowerLeft.z && pos.z < upperRight.z){
+                cageRezzed = FALSE;
+                llMessageLinked(LINK_SET, RLV, "Relock^" + (string)Pet, NULL_KEY); 
+                llWhisper(0,name+" is put back where it belongs.");
+                TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
+            }
+            else{
+                if(pos == zeroPos){
+                    llMessageLinked(LINK_SET, SENSOR, "escaped," + (string)Pet, NULL_KEY);
+                    llInstantMessage(Pet, "You have broken free from your toymode.");
+                    llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet+",!release");
+                    TempPetKeys=llDeleteSubList(TempPetKeys, x, x);
+                    TempPetStatus=llDeleteSubList(TempPetStatus, x, x);
+                }
+                else{
+//                    llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(LINK_ROOT) + "=force");
+                    integer poseballlink = getLinkWithName("cageframe");
+                    llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
+                }
+            }
         }
     }
-    else{
-        timerMenu(nameKey);
-    }
+    
+    PetStatus = [];
+    PetStatus = llList2List(TempPetStatus,0,-1);
+    TempPetStatus = [];
+    PetKeys = [];
+    PetKeys = llList2List(TempPetKeys,0,-1);
+    TempPetKeys =[];
+    llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
 }
 
-default
-{
-    on_rez(integer p)
-    {
+setBox(){
+    llMessageLinked(LINK_SET, DOOR_BUTTON, "Toymode", NULL_KEY);
+    llSleep(1);
+    list box = llGetBoundingBox(llGetKey());
+    upperRight = llList2Vector(box,1);
+    lowerLeft =  llList2Vector(box,0);
+//    llSitTarget(ZERO_VECTOR,ZERO_ROTATION);
+    integer poseballlink = getLinkWithName("cageframe");
+//    llLinkSitTarget(LINK_ROOT,(upperRight+lowerLeft)/2,llEuler2Rot(<-90,0,0>*DEG_TO_RAD));
+    offset=(upperRight+lowerLeft)/2;
+}
+
+list TempPetKeys;
+list TempPetStatus;
+
+list PetKeys;
+list PetStatus;
+
+default{
+    state_entry(){
+        setBox();
+    }    
+        
+    on_rez(integer start_param){
         llResetScript();
     }
-    state_entry()
-    {
-        //llWhisper(0,"Script Reset");
-        ownerk = llGetOwner();
-        llSetText(" ", <1,1,1>, 1.0);
-        
+    
+    link_message(integer sender_num, integer num, string str, key id){
+        if(num == SENSOR){
+            if(str == "ON"){
+                llSetTimerEvent(timerTick);
+            }
+            else if(str == "OFF"){
+                llSetTimerEvent(0);
+            }
+            else if(str == "getKeys"){
+                llSensor("", NULL_KEY, AGENT, 20, PI);
+            }
+            else if(str == "TimerStarted"){
+                TimerRunning = "Running";
+            }
+            else if(str == "TimerStopped"){
+                TimerRunning = "Stopped";
+            }
+            
+        }
     }
     
-    listen(integer channel, string name, key id, string message)
-    {
-        if(channel == Button_CHANNEL)
-        {
-            if(nameKey == id)
-            {
-                if(message == "Add")
-                {
-                    addMenu();
-                }
-                else if(message == "Remove")
-                {
-                    remMenu();
-                }
-                else if(message == "Start")
-                {
-                    startTimer();
-                }
-                else if(message == "Stop")
-                {
-                    llSetTimerEvent(0);
-                    timerRunning = 0;
-                    timerState = "Timer Stopped:";
-                    llSetText(" ", <1,1,1>, 1.0);
-                    //llMessageLinked(LINK_SET, BACK,"timeCHK" + MSG_SEP + DisplayTime(releaseTime), NULL_KEY); 
-                    llWhisper(0,"Timer Stopped.");
-                    llMessageLinked(LINK_SET, BACK, "Timer_Stop", NULL_KEY);  
-                    llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
-                    llSleep(0.5);
-                    timerMenu(nameKey);
-                }
-                else if(message == "Clear")
-                {
-                    llSetTimerEvent(0);
-                    timerRunning = 0;
-                    releaseTime = 0;
-                    timerState = "Timer Stopped:";
-                    llWhisper(0,"Timer Cleared and Stopped.");
-                    llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
-                    llSetText(" ", <1,1,1>, 1.0);
-                    llSleep(0.5);
-                    timerMenu(nameKey);
-                }
-                else if(message == "Refresh")
-                {
-                    timerMenu(nameKey);
-                }
-                else if(message == "Main...")
-                {
-                     llMessageLinked(LINK_SET, BACK, "Return_From_Timer", NULL_KEY);
-                }
-                else if(message == "HideTimer")
-                {
-                     HideTimerb = "ShowTimer";
-                     timerHidden = TRUE;
-                     HideTimer = "*Timer is Hidden when its running.";
-                     llWhisper(0,"Timer will now be Hidden when its running");
-                     llSetText(" ", <1,1,1>, 1.0);
-                     timerMenu(nameKey);
-                }
-                else if(message == "ShowTimer")
-                {
-                     HideTimerb = "HideTimer";
-                     timerHidden = FALSE;
-                     HideTimer = "*Timer is Displayed when its running.";
-                     llWhisper(0,"Timer will now be Shown when its running");
-                     llSetText(DisplayTime(releaseTime), <1,1,1>, 1.0);
-                     timerMenu(nameKey);
-                }
-                else
-                {
-                    timerMenu(nameKey);
-                }
-            }
-        }
-        else if(channel == Timer_CHANNEL)
-        {
-            list messageList = llParseString2List(message, [" "], []);
-            string command = llList2String(messageList, 0);
-            string number = llList2String(messageList, 1);
-            string timeword = llList2String(messageList, 2);
-          if(nameKey == id)
-          {
-            if(command == "Add")
-            {
-                timing(messageList);
-                releaseTime = releaseTime + time;
-                if(timerHidden == FALSE){
-                    llWhisper(0,number + " " + timeword + " added to Timer. Total Time: " + (string)DisplayTime(releaseTime));
-                }
-                addMenu();
-            }
-            else if(command == "-")
-            {
-                timing(messageList);
-                releaseTime = releaseTime - time;
-                
-                if(releaseTime <= 0)
-                {
-                    if(timerRunning)
-                    {
-                        llWhisper(0, "Timer Cleared.");
-                    }
-                    
-                    llSetTimerEvent(0);
-                    timerRunning = 0;
-                    releaseTime = 0;
-                    llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
-                }
-                
-                if(timerHidden == FALSE)
-                {
-                    llWhisper(0,number + " " + timeword + " removed from Timer. Total Time: " + (string)DisplayTime(releaseTime));
-                }
-                remMenu();
-            }
-            else if(message == "Start")
-            {
-                startTimer();
-            }
-            else if(message == "Back...")
-            {
-                timerMenu(nameKey);
-            }
-          }
-        }
-    }
-    timer()
-        {
-        integer currentTime = llGetUnixTime();
-        releaseTime = releaseTime - (currentTime - lastTimeCheck);
-        lastTimeCheck = currentTime;
-        
-        if(releaseTime <= 0)
-        {
+    timer(){
+        integer length = llGetListLength(PetKeys);
+        if(length == (integer)0){
+            llWhisper(0,"There's no plush toy. Unlocking.");
             llSetTimerEvent(0);
-            timerRunning = 0;            
-            releaseTime = 0;
-
             llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
             llMessageLinked(LINK_SET, BACK, "Unlock", NULL_KEY); 
-            llSetText(" ", <1,1,1>, 1.0);
         }
-        else
-        {
-            if(timerHidden == FALSE)
-            {
-                llSetText(DisplayTime(releaseTime), <1,1,1>, 1.0);
-            }
-            else if (timerHidden == TRUE)
-            {
-                llSetText(" ", <1,1,1>, 1.0);
-            }
+        else{
+            posCheck();
+            llSetTimerEvent(timerTick);   
         }
     }
     
-    link_message(integer sender_num, integer num, string str, key id)
-    {
-        list messageList = llParseString2List(str, [MSG_SEP], []);
-        string command = llList2String(messageList, 0);
-        key recievedKey = llList2Key(messageList, 1);
-        if(num == TIMER)
-        {
-            nameKey = recievedKey;
-            if(command == "Timer")
-            {
-                timerMenu(nameKey);
-            }
-            else if(command == "Time_Check")
-            {
-                llMessageLinked(LINK_SET, BACK,"timeCHK" + MSG_SEP + DisplayTime(releaseTime), NULL_KEY); 
-            }
-            else if(command == "Pause")
-            {
-                //llOwnerSay("Pause");
-                llSetTimerEvent(0);
-                timerRunning = 0;
-                timerState = "Timer Stopped:";
-                llSetText(" ", <1,1,1>, 1.0);
-            }
-            else if(command == "Resume")
-            {
-                lastTimeCheck = llGetUnixTime();
-                llSetTimerEvent(5);
-                timerRunning = 1;
-                timerState = "Timer Running:";
-                if(timerHidden == FALSE)
-                {
-                    llSetText(DisplayTime(releaseTime), <1,1,1>, 1.0);
+    dataserver(key queryid, string data){
+        integer numRequests = llGetListLength(RequestID);
+        integer x;
+
+        for(x = 0; x < numRequests; x++){
+            if(queryid == llList2Key(RequestID, x)){
+                key AV = llList2Key(RequestAV, x);
+                integer online = (integer)data;
+                string message = llKey2Name(AV) + " is ";
+                if(online){
+                    message += "online";
+                    list KeyofPet = [AV];
+                    integer AVpos = llListFindList(PetKeys, KeyofPet);
+                    if(AVpos != (integer)-1){
+                        PetStatus = llListReplaceList(PetStatus, [2], AVpos, AVpos);
+                    }
                 }
-                else if (timerHidden == TRUE)
-                {
-                    llSetText(" ", <1,1,1>, 1.0);
+                else{
+                    message += "offline";
+                    list KeyofPet = [AV];
+                    integer AVpos = llListFindList(PetKeys, KeyofPet);
+                    if(AVpos != (integer)-1){
+                        PetStatus = llListReplaceList(PetStatus, [1], AVpos, AVpos);   
+                    }
                 }
-            }
-            else if(command == "Unlock")
-            {
-                llSleep(1.0);
-                llResetScript();
+                RequestID = llDeleteSubList(RequestID, x, x);
+                RequestAV = llDeleteSubList(RequestAV, x, x);
+                jump done;
             }
         }
-        else if(num == LISTENER_TIMER2){
-            list messageList = llParseString2List(str, ["^"], []);
-            string command = llList2String(messageList, 0);
-            integer item = llList2Integer(messageList, 1);
-            
-            if(command == "Remove_Listener"){
-                llListenRemove(Button_CHANNEL_LS);
-                llListenRemove(Timer_CHANNEL_LS);
+        @done;
+    }
+    
+    sensor(integer total_number){
+        PetKeys = [];
+        PetStatus = [];
+        integer x;
+        
+        for (x = 0; x < total_number; x++){
+            key Pet = llDetectedKey(x);
+            vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
+            pos = (pos - llGetRootPosition()) / llGetRootRotation();
+            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
+               pos.y > lowerLeft.y && pos.y < upperRight.y &&
+               pos.z > lowerLeft.z && pos.z < upperRight.z){
+                PetKeys += [llDetectedKey(x)];
+                PetStatus += [0];
+                string name = llKey2Name(Pet);
+                llWhisper(0,name + " detected where it belongs.");
             }
         }
-        else if (num == DOOR_BUTTON && command=="Lock"){
-            if (releaseTime<300){
-                nameKey=NULL_KEY;
-                releaseTime = 0; //changed from 300 to 0 so 'lock' can simply lock without a timer *Dav
-                startTimer();
-            }
-        }
+        llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
     }
 }
