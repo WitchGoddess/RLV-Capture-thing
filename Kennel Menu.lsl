@@ -284,7 +284,7 @@ default{
                     ownerMenu(door_operator);
                 else llInstantMessage(id,"You are not the owner.");
             }
-            else if (command==Invis){
+            else if (command=="Invis"){
                 makeInvis();
             }
             else if(command == "Back..."){
