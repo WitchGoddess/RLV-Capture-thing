@@ -91,13 +91,13 @@ posCheck(){
                pos.z > lowerLeft.z && pos.z < upperRight.z){
                 cageRezzed = FALSE;
                 llMessageLinked(LINK_SET, RLV, "Relock^" + (string)Pet, NULL_KEY); 
-                llWhisper(0,name+" is back in the cage.");
+                llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
             }
             else{
                 if(pos == zeroPos){
                     llMessageLinked(LINK_SET, SENSOR, "escaped," + (string)Pet, NULL_KEY);
-                    llInstantMessage(Pet, "You have been naughty and escaped from the cage.");
+                    llInstantMessage(Pet, "You have broken free from your toymode.");
                     llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet+",!release");
                     TempPetKeys=llDeleteSubList(TempPetKeys, x, x);
                     TempPetStatus=llDeleteSubList(TempPetStatus, x, x);
@@ -121,7 +121,7 @@ posCheck(){
 }
 
 setBox(){
-    llMessageLinked(LINK_SET, DOOR_BUTTON, "Close", NULL_KEY);
+    llMessageLinked(LINK_SET, DOOR_BUTTON, "Toymode", NULL_KEY);
     llSleep(1);
     list box = llGetBoundingBox(llGetKey());
     upperRight = llList2Vector(box,1);
@@ -171,7 +171,7 @@ default{
     timer(){
         integer length = llGetListLength(PetKeys);
         if(length == (integer)0){
-            llWhisper(0,"Cage is empty...Unlocking.....");
+            llWhisper(0,"There's no plush toy. Unlocking.");
             llSetTimerEvent(0);
             llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
             llMessageLinked(LINK_SET, BACK, "Unlock", NULL_KEY); 
@@ -230,7 +230,7 @@ default{
                 PetKeys += [llDetectedKey(x)];
                 PetStatus += [0];
                 string name = llKey2Name(Pet);
-                llWhisper(0,name + " detected in cage.");
+                llWhisper(0,name + " detected where it belongs.");
             }
         }
         llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
