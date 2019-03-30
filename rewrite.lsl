@@ -1,5 +1,4 @@
 //-----Link Channels-----//
-integer DOOR_BUTTON     = 11008;
 integer TIMER           = 11009;
 integer RCV_TIMER       = 11010;
 integer RLV             = 11012;
@@ -57,6 +56,15 @@ list sensor_names;
 key door_operator = NULL_KEY;
 key petkey = NULL_KEY;
 integer linkCount;
+
+integer getLinkWithName(string name) {
+    integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
+    integer x = llGetNumberOfPrims() + i; // [0, 1) or [1, llGetNumberOfPrims()]
+    for (; i < x; ++i)
+        if (llGetLinkName(i) == name) 
+            return i; // Found it! Exit loop early with result
+    return -1; // No prim with that name, return -1.
+}
 
 channelMaker2(){
     MENU_CH=-((integer)llFrand(100000))+999;
@@ -137,7 +145,9 @@ capture(string name){
     integer index = llListFindList(sensor_names, [name]);
     if (index != -1){
         key sensorKey = llList2Key(sensor_keys, index);
-        relay(sensorKey, "@sit:" + (string)llGetLinkKey(LINK_ROOT) + "=force");
+        integer poseballlink = getLinkWithName("Plush");
+//        relay(sensorKey, "@sit:" + (string)llGetKey() + "=force");
+        relay(sensorKey, "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
         Timerb = "Timer";
     }
 }
@@ -394,13 +404,16 @@ default{
     }
     
     changed(integer change){
+        integer poseballlink = getLinkWithName("Plush");
         if (change & CHANGED_LINK){
             if (linkCount!=llGetObjectPrimCount(llGetKey())){
                 llOwnerSay("Linked prim have changed.  Resetting.");
                 kennelReset();
             }
-            if (llAvatarOnLinkSitTarget(LINK_ROOT)!=NULL_KEY){
-                llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);       
+//            if (llAvatarOnLinkSitTarget(LINK_ROOT)!=NULL_KEY){
+            if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
+                llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
+                llSleep(0.5);      
                 lock();
                 llUnSit(llAvatarOnLinkSitTarget(LINK_ROOT));
             }

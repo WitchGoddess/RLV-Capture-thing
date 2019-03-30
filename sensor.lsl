@@ -4,6 +4,7 @@ integer TIMER           = 11009;
 integer BACK            = 11010;
 integer RLV             = 11012;
 integer KEY_LIST        = 11014;
+integer DOOR_BUTTON     = 11008;
 
 integer STATUS_NORMAL   = 0;
 integer STATUS_OFFLINE  = 1;
@@ -78,7 +79,7 @@ posCheck(){
             RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
             RequestAV += [Pet];
         }
-        else if(status == STATUS_ESCAPED){
+        else if(status == STATUS_ESCAPED){   
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             vector zeroPos = <0.00000, 0.00000, 0.00000>;
             petLoc = pos;
@@ -87,9 +88,7 @@ posCheck(){
             if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
-                llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
                 llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
-                llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
             }
@@ -102,8 +101,8 @@ posCheck(){
                     TempPetStatus=llDeleteSubList(TempPetStatus, x, x);
                 }
                 else{
-//                    llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(LINK_ROOT) + "=force");
-                    integer poseballlink = getLinkWithName("cageframe");
+                    //llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(LINK_ROOT) + "=force");
+                    integer poseballlink = getLinkWithName("Plush");
                     llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
                     llWhisper(0,"Debug: Sit triggered"); 
                 }
@@ -125,10 +124,9 @@ setBox(){
     list box = llGetBoundingBox(llGetKey());
     upperRight = llList2Vector(box,1);
     lowerLeft =  llList2Vector(box,0);
-//    llSitTarget(ZERO_VECTOR,ZERO_ROTATION);
-    integer poseballlink = getLinkWithName("cageframe");
-//    llLinkSitTarget(LINK_ROOT,(upperRight+lowerLeft)/2,llEuler2Rot(<-90,0,0>*DEG_TO_RAD));
-    offset=(upperRight+lowerLeft)/2;
+    //llSitTarget(ZERO_VECTOR,ZERO_ROTATION);
+    //llLinkSitTarget(LINK_ROOT,(upperRight+lowerLeft)/2,llEuler2Rot(<-90,0,0>*DEG_TO_RAD));
+    //offset=(upperRight+lowerLeft)/2;
 }
 
 list TempPetKeys;
@@ -229,9 +227,6 @@ default{
                 PetKeys += [llDetectedKey(x)];
                 PetStatus += [0];
                 string name = llKey2Name(Pet);
-                llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
-                llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
-                llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is back where it belongs.");
             }
         }
