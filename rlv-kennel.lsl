@@ -15,14 +15,14 @@ key door_operator;
 
 list PetKeys;
 list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n","@edit=n","@rez=n","@addoutfit=n","@remoutfit=n","@fartouch:3=n"];
-//Possible additions @camdistmax:0=n (force mouselook only), @camunlock=n (only disallow freecam), @chatnormal=n (can only whisper), @sendgesture=n (disallow gestures), @touchall=n (disallow touch at all), @touchworld=n (disallow touching anything but hud), @showworldmap=n, @showminimap=n, @showloc=n, "@shownames:"+ownerk+"=n", @showhovertextworld=n, 
+//Possible additions @camdistmax:0=n (force mouselook only), @camunlock=n (only disallow freecam), @chatnormal=n (can only whisper), @sendgesture=n (disallow gestures), @touchall=n (disallow touch at all), @touchworld=n (disallow touching anything but hud), @showworldmap=n, @showminimap=n, @showloc=n, "@shownames:"+ownerk+"=n", @showhovertextworld=n
 
+list rlv_full;
 integer checkingRLV;
 integer RLV_detected;
 integer Locked = FALSE;
 integer Key_Taken = FALSE;
 
-string ALL = "All menu Restrictions are enabled.";
 
 key keyHolder = NULL_KEY;
 
@@ -48,8 +48,9 @@ sendRLV()
     for(x = 0; x < length; x++)
     {
         key Pet = llList2Key(PetKeys, x);
-        //llSay(0, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_hardcoded, "|"));
-        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_hardcoded, "|"));
+        rlv_full = rlv_hardcoded;
+        //llSay(0, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_full, "|"));
+        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_full, "|"));
     }   
     //llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)petName+",@tplm=n|@tploc=n|@tplure=n|@sittp=n|@fartouch=n");
 }
@@ -113,6 +114,18 @@ default
             //llMessageLinked(LINK_SET, RLV, "RLV_CHK_FAILED", NULL_KEY);
         }
     }
+    listen(integer channel, string name, key id, string message)
+    {
+        list messageList = llParseString2List(message, [MSG_SEP], []);
+        string command = llList2String(messageList, 0);
+        string YesNo = llList2String(messageList, 1);
+        string recievedkey = llList2Key(messageList, 2);
+        
+        if (channel == RELAY_CHANNEL)
+        {
+            execute(name, id, message);
+        }
+    }
     link_message(integer sender_num, integer num, string str, key id)
     {
         list messageList = llParseString2List(str, [MSG_SEP], []);
@@ -141,15 +154,10 @@ default
                 keyHolder = NULL_KEY;
                 Key_Taken = FALSE;
             }
-            else if(command == "tempRelease")
-            {
-                key target = recievedKey;
-                llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ",!release");
-            }
             else if(command == "Relock")
             {
                 key target = recievedKey;
-                llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
+                llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_full, "|"));
             }
         }
         else if(num == KEY_LIST)
