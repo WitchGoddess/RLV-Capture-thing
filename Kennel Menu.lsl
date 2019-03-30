@@ -217,9 +217,9 @@ default{
                 }
                 else{
                     if(Kennel_Locked == TRUE)                        {
-                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate. Owner test DEBUG");
+                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate.");
                         if(Timer_Running == TRUE){
-                            llWhisper(0,"You will become animated again once timer expires. Owner test DEBUG");
+                            llWhisper(0,"You will become animated again once timer expires.");
                         }
                     }
                     else{
@@ -236,11 +236,11 @@ default{
                         dialogMenu(door_operator);
                     }
                     else if(PetAccess == FALSE){
-                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate. Not Owner test DEBUG");
+                        llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate.");
                         if(Timer_Running == TRUE)
                         {
                             timer_check();
-                            llWhisper(0,"You will become animated again once timer expires. Not Owner test DEBUG");
+                            llWhisper(0,"You will become animated again once timer expires.");
                         }
                     }
                 }
