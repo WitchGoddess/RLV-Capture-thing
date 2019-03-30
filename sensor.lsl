@@ -9,7 +9,6 @@ integer DOOR_BUTTON     = 11008;
 integer STATUS_NORMAL   = 0;
 integer STATUS_OFFLINE  = 1;
 integer STATUS_ESCAPED  = 2;
-integer cageRezzed      = FALSE;
 string  TimerRunning    = "Stopped";
 float   timerTick       = 2;
 
@@ -81,6 +80,7 @@ posCheck(){
             RequestAV += [Pet];
         }
         else if(status == STATUS_ESCAPED){   
+            key Pet = llDetectedKey(x);
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             vector zeroPos = <0.00000, 0.00000, 0.00000>;
             petLoc = pos;
@@ -89,7 +89,6 @@ posCheck(){
             if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
-                cageRezzed = FALSE;
                 llMessageLinked(LINK_SET, RLV, "Relock" + (string)Pet, NULL_KEY);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is put back where it belongs.");
@@ -232,7 +231,9 @@ default{
                 PetKeys += [llDetectedKey(x)];
                 PetStatus += [0];
                 string name = llKey2Name(Pet);
-                llWhisper(0,name + " detected where it belongs.");
+                llMessageLinked(LINK_SET, RLV, "Relock" + (string)Pet, NULL_KEY);
+                llWhisper(0,"Debug: Relock trigger sent"); 
+                llWhisper(0,name+" is back where it belongs.");
             }
         }
         llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
