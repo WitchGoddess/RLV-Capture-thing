@@ -1,5 +1,4 @@
 //-----Link Channels-----//
-integer DOOR_BUTTON     = 11008;
 integer TIMER           = 11009;
 integer RCV_TIMER       = 11010;
 integer RLV             = 11012;
@@ -39,7 +38,6 @@ integer Seconds = 60;
 string PingFromRelay;
 key ownerk;
 string OwnerB = "-";
-string ToyModeB = "-";
 string LockB = "-";
 string Timerb = "-";
 string Keysb = "-";
@@ -92,7 +90,7 @@ dialogMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     captureChannel = llListen( CAPTURE_CHANNEL, "", door_operator, "");
-    list KennelMenu = [ToyModeB, LockB, OwnerB, Keysb, Timerb, "Capture", InvisB];
+    list KennelMenu = [LockB, OwnerB, Keysb, Timerb, "Capture", InvisB];
     llDialog(door_operator, "Plush Toy Control Menu:\n\n(Menu will Timeout in 60 Seconds.)", KennelMenu, MENU_CH);
 }
 
@@ -108,7 +106,6 @@ ownerMenu(key door_operator){
 }
 
 Unlock(){
-    ToyModeB = "Un-Toymode";
     LockB = "Lock";
     Timerb = "Timer";
     Kennel_Locked = FALSE;
@@ -124,12 +121,10 @@ Unlock(){
     llMessageLinked(LINK_SET, TIMER,"Unlock", NULL_KEY);
     llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
     llMessageLinked(LINK_SET, RLV, "Unlock", NULL_KEY);
-    llMessageLinked(LINK_SET, DOOR_BUTTON, "Unlock", NULL_KEY);
     llMessageLinked(LINK_SET, KEY, "key_hidden", NULL_KEY);
 }
 
 lock(){
-    ToyModeB = "-";
     LockB = "Unlock";
     Timerb = "Timer";
     if (Kennel_Locked==FALSE) llPlaySound(door_lock,1);
@@ -137,7 +132,6 @@ lock(){
     PetAccess = FALSE;
     llMessageLinked(LINK_SET, SENSOR, "ON", NULL_KEY);
     llMessageLinked(LINK_SET, RLV, "Lock", NULL_KEY);
-    llMessageLinked(LINK_SET, DOOR_BUTTON, "Lock", NULL_KEY);
     if(Key_Taken == FALSE){
         Keysb = "Take Key";
         Key_Taken = FALSE;
@@ -154,7 +148,6 @@ capture(string name){
         integer poseballlink = getLinkWithName("cageframe");
 //        relay(sensorKey, "@sit:" + (string)llGetKey() + "=force");
         relay(sensorKey, "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
-        ToyModeB = "Un-Toymode";
         Timerb = "Timer";
     }
 }
@@ -179,8 +172,6 @@ default{
         ownerk = llGetOwner();
         linkCount=llGetObjectPrimCount(llGetKey());
         llListen(CAPTURE_CHANNEL, "", NULL_KEY, "");
-        llMessageLinked(LINK_SET, DOOR_BUTTON, "Unlock", NULL_KEY);
-        llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);
         llMessageLinked(LINK_SET, KEY, "key_hidden", NULL_KEY);
         llOwnerSay("Cage Reset");
     }
@@ -291,21 +282,17 @@ default{
                 dialogMenu(door_operator);
             }
             else if(command == "ToyMode"){
-                ToyModeB = "Un-Toymode";
                 LockB = "Lock";
                 Timerb = "Timer";
                 llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);
                 dialogMenu(door_operator);
             }
             else if(command == "Un-ToyMode"){
                 PetKeys = [];
-                ToyModeB = "Toymode";
                 LockB = "-";
                 Timerb = "-";
                 Keysb = "-";
                 llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Un-ToyMode", NULL_KEY);
                 dialogMenu(door_operator);
             }
             else if(command == "Lock"){
@@ -424,10 +411,8 @@ default{
                 llSetTimerEvent(0);
                 Unlock();
                 PetKeys = [];
-                ToyModeB = "Toymode";
                 LockB = "-";
                 Timerb = "-";
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "Un-ToyMode", NULL_KEY);
             }
         }
     }
@@ -442,8 +427,7 @@ default{
 //            if (llAvatarOnLinkSitTarget(LINK_ROOT)!=NULL_KEY){
             if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
                 llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
-                llSleep(0.5);
-                llMessageLinked(LINK_SET, DOOR_BUTTON, "ToyMode", NULL_KEY);        
+                llSleep(0.5);      
                 lock();
                 llUnSit(llAvatarOnLinkSitTarget(LINK_ROOT));
             }

@@ -4,7 +4,6 @@ integer TIMER           = 11009;
 integer BACK            = 11010;
 integer RLV             = 11012;
 integer KEY_LIST        = 11014;
-integer DOOR_BUTTON     = 11008;
 
 integer STATUS_NORMAL   = 0;
 integer STATUS_OFFLINE  = 1;
@@ -89,7 +88,7 @@ posCheck(){
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
                 llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
-                llWhisper(0,"Debug: Sent: Relock" + "^" + (string)Pet);
+                llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
@@ -122,7 +121,6 @@ posCheck(){
 }
 
 setBox(){
-    llMessageLinked(LINK_SET, DOOR_BUTTON, "Toymode", NULL_KEY);
     llSleep(1);
     list box = llGetBoundingBox(llGetKey());
     upperRight = llList2Vector(box,1);
@@ -232,6 +230,7 @@ default{
                 PetStatus += [0];
                 string name = llKey2Name(Pet);
                 llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
+                llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is back where it belongs.");
             }

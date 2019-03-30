@@ -141,16 +141,13 @@ default
                 keyHolder = NULL_KEY;
                 Key_Taken = FALSE;
             }
-            else if(command == "tempRelease")
-            {
-                key target = recievedKey;
-                llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ",!release");
-            }
             else if(command == "Relock")
             {
                 key target = recievedKey;
-                llWhisper(0,"Debug: Received: command " + command + "and key " target);
-                llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
+                llWhisper(0,"Debug: Received: command " + command + " and key " (string)target);
+                llSleep(15);
+                //llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
+                sendRLV();
                 llWhisper(0,"Debug: Relock triggered");                 
             }
         }

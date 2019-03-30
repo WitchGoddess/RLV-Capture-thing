@@ -2,7 +2,6 @@
 integer SENSOR          = 136;
 integer TIMER           = 11009;
 integer BACK            = 11010;
-integer DOOR_BUTTON     = 11008;
 integer LISTENER_TIMER2 = 11012;
 
 string MSG_SEP = "^";
