@@ -88,7 +88,7 @@ posCheck(){
             if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
-                llMessageLinked(LINK_SET, RLV, "Relock" + (string)Pet, NULL_KEY);
+                llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
@@ -230,7 +230,7 @@ default{
                 PetKeys += [llDetectedKey(x)];
                 PetStatus += [0];
                 string name = llKey2Name(Pet);
-                llMessageLinked(LINK_SET, RLV, "Relock" + (string)Pet, NULL_KEY);
+                llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is back where it belongs.");
             }
