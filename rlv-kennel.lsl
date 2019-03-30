@@ -150,6 +150,7 @@ default
             {
                 key target = recievedKey;
                 llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
+                llWhisper(0,"Debug: Relock triggered");                 
             }
         }
         else if(num == KEY_LIST)
