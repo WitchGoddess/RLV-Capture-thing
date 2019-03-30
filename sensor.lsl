@@ -79,8 +79,7 @@ posCheck(){
             RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
             RequestAV += [Pet];
         }
-        else if(status == STATUS_ESCAPED){   
-            key Pet = llDetectedKey(x);
+        else if(status == STATUS_ESCAPED){
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             vector zeroPos = <0.00000, 0.00000, 0.00000>;
             petLoc = pos;
