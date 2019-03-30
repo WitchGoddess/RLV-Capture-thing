@@ -89,6 +89,7 @@ posCheck(){
                pos.y > lowerLeft.y && pos.y < upperRight.y &&
                pos.z > lowerLeft.z && pos.z < upperRight.z){
                 llMessageLinked(LINK_SET, RLV, "Relock" + "^" + (string)Pet, NULL_KEY);
+                llWhisper(0,"Debug: Sent: Relock" + "^" + (string)Pet);
                 llWhisper(0,"Debug: Relock trigger sent"); 
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);

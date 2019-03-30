@@ -149,6 +149,7 @@ default
             else if(command == "Relock")
             {
                 key target = recievedKey;
+                llWhisper(0,"Debug: Received: command " + command + "and key " target);
                 llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
                 llWhisper(0,"Debug: Relock triggered");                 
             }
