@@ -39,7 +39,7 @@ integer Seconds = 60;
 string PingFromRelay;
 key ownerk;
 string OwnerB = "-";
-string ToyModeB = "Un-Toymode";
+string ToyModeB = "-";
 string LockB = "-";
 string Timerb = "-";
 string Keysb = "-";
