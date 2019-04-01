@@ -16,8 +16,10 @@ key door_operator;
 list PetKeys;
 
 list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n" "@emote=add","@edit=n","@rez=n","@addoutfit=n","@remoutfit=n","@fartouch:1=n", "@camdistmax:0=n"];
-
 //Possible additions @camdistmax:0=n (force mouselook only), @camunlock=n (only disallow freecam), @chatnormal=n (can only whisper), @sendgesture=n (disallow gestures), @touchall=n (disallow touch at all), @touchworld=n (disallow touching anything but hud), @showworldmap=n, @showminimap=n, @showloc=n, "@shownames:"+ownerk+"=n", @showhovertextworld=n
+list rlv_plush = [""];
+list rlv_unplush = [""];
+//Add outfit commands to go invisible on plush, and to plush avatar on unplush
 
 list rlv_full;
 integer checkingRLV;
@@ -51,10 +53,8 @@ sendRLV()
     {
         key Pet = llList2Key(PetKeys, x);
         rlv_full = rlv_hardcoded;
-        //llSay(0, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_full, "|"));
         llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_full, "|"));
-    }   
-    //llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)petName+",@tplm=n|@tploc=n|@tplure=n|@sittp=n|@fartouch=n");
+    }
 }
 
 releaseRLV()
@@ -66,6 +66,32 @@ releaseRLV()
     {
         key Pet = llList2Key(PetKeys, x);
         llShout(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ",!release");
+    }
+}
+
+plushRLV()
+{
+    integer length = llGetListLength(PetKeys);
+    integer x;
+    
+    for(x = 0; x < length; x++)
+    {
+        key Pet = llList2Key(PetKeys, x);
+        rlv_full = rlv_hardcoded;
+        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_plush, "|"));
+    }
+}
+
+unplushRLV()
+{
+    integer length = llGetListLength(PetKeys);
+    integer x;
+    
+    for(x = 0; x < length; x++)
+    {
+        key Pet = llList2Key(PetKeys, x);
+        rlv_full = rlv_hardcoded;
+        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_unplush, "|"));
     }
 }
 
@@ -144,6 +170,14 @@ default
             {
                 releaseRLV();
                 Locked = FALSE;
+            }
+            else if(command == "Plush")
+            {
+                plushRLV();
+            }
+            else if(command == "Unplush")
+            {
+                unplushRLV();
             }
             else if(command == "key_taken")
             {

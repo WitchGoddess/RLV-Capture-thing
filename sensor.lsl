@@ -19,9 +19,6 @@ key primForce = NULL_KEY;
 vector petLoc;
 vector offset = <0.0,0.0,1.0>;
 
-vector upperRight;
-vector lowerLeft;
-
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
     integer x = llGetNumberOfPrims() + i; // [0, 1) or [1, llGetNumberOfPrims()]
@@ -30,6 +27,8 @@ integer getLinkWithName(string name) {
             return i; // Found it! Exit loop early with result
     return -1; // No prim with that name, return -1.
 }
+
+integer poseballlink = getLinkWithName("Plush");
 
 posCheck(){
     integer length = llGetListLength(PetKeys);
@@ -66,9 +65,7 @@ posCheck(){
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
-            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
-               pos.y > lowerLeft.y && pos.y < upperRight.y &&
-               pos.z > lowerLeft.z && pos.z < upperRight.z){}
+            if(llAvatarOnLinkSitTarget(poseballlink) == Pet{}
             else{
                 llSleep(5.0);
                 RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
@@ -85,9 +82,7 @@ posCheck(){
             petLoc = pos;
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
-            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
-               pos.y > lowerLeft.y && pos.y < upperRight.y &&
-               pos.z > lowerLeft.z && pos.z < upperRight.z){
+            if(llAvatarOnLinkSitTarget(poseballlink){
                 llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
@@ -101,8 +96,6 @@ posCheck(){
                     TempPetStatus=llDeleteSubList(TempPetStatus, x, x);
                 }
                 else{
-                    //llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(LINK_ROOT) + "=force");
-                    integer poseballlink = getLinkWithName("Plush");
                     llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
                     llWhisper(0,"Debug: Sit triggered"); 
                 }
@@ -119,16 +112,6 @@ posCheck(){
     llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
 }
 
-setBox(){
-    llSleep(1);
-    list box = llGetBoundingBox(llGetKey());
-    upperRight = llList2Vector(box,1);
-    lowerLeft =  llList2Vector(box,0);
-    //llSitTarget(ZERO_VECTOR,ZERO_ROTATION);
-    //llLinkSitTarget(LINK_ROOT,(upperRight+lowerLeft)/2,llEuler2Rot(<-90,0,0>*DEG_TO_RAD));
-    //offset=(upperRight+lowerLeft)/2;
-}
-
 list TempPetKeys;
 list TempPetStatus;
 
@@ -137,7 +120,8 @@ list PetStatus;
 
 default{
     state_entry(){
-        setBox();
+        llSleep(1);
+        llLinkSitTarget(poseballlink,<0.0,0.0,0.5>,ZERO_ROTATION);
     }    
         
     on_rez(integer start_param){
@@ -219,11 +203,7 @@ default{
         
         for (x = 0; x < total_number; x++){
             key Pet = llDetectedKey(x);
-            vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
-            pos = (pos - llGetRootPosition()) / llGetRootRotation();
-            if(pos.x > lowerLeft.x && pos.x < upperRight.x &&
-               pos.y > lowerLeft.y && pos.y < upperRight.y &&
-               pos.z > lowerLeft.z && pos.z < upperRight.z){
+            if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
                 PetKeys += [llDetectedKey(x)];
                 PetStatus += [0];
                 string name = llKey2Name(Pet);

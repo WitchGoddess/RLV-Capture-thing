@@ -126,11 +126,8 @@ startTimer(){
             llWhisper(0,"Timer is Hidden...");
             llSetText(" ", <1,1,1>, 1.0);
         }
-        if(nameKey!=NULL_KEY && nameKey == ownerk){
-            llMessageLinked(LINK_SET, BACK, "Owner_Locked", NULL_KEY);
-        }
-        else if(nameKey!=NULL_KEY){
-            llMessageLinked(LINK_SET, BACK, "Sub_Locked", NULL_KEY);
+        if(nameKey!=NULL_KEY){
+            llMessageLinked(LINK_SET, BACK, "Locked", NULL_KEY);
         }
     }
     else{
