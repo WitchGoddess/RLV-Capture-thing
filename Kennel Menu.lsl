@@ -40,8 +40,8 @@ string OwnerB = "-";
 string LockB = "-";
 string Timerb = "-";
 string Keysb = "-";
-string InvisB="-";
-string UnSitB="-";
+string UnPlushB="-";
+string HideDollB="-"
 key hasKey_key;
 string hasKey;
 
@@ -89,7 +89,7 @@ dialogMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     captureChannel = llListen( CAPTURE_CHANNEL, "", door_operator, "");
-    list KennelMenu = [LockB, OwnerB, Keysb, Timerb, "Capture", InvisB, UnsitB];
+    list KennelMenu = [LockB, OwnerB, Keysb, Timerb, "Capture", UnsitB];
     llDialog(door_operator, "Plush Toy Control Menu:\n\n(Menu will Timeout in 60 Seconds.)", KennelMenu, MENU_CH);
 }
 
@@ -100,7 +100,7 @@ ownerMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     menuChannel = llListen ( CAPTURE_CHANNEL, "", door_operator, "");
-    list OwnerMenu = ["Reset","Back..."];
+    list OwnerMenu = ["Reset", HideDollB, "Back..."];
     llDialog(door_operator, "Plush Toy Control Menu:.", OwnerMenu, MENU_CH);
 }
 
@@ -114,7 +114,7 @@ Unlock(){
     hasKey_key = NULL_KEY;
     hasKey = "";
     Keysb = "-";
-    UnSitB="UnPlush";
+    UnPlushB="UnPlush";
     llPlaySound(door_unlock,1);
     llMessageLinked(LINK_SET, TIMER,"Unlock", NULL_KEY);
     llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
@@ -124,7 +124,7 @@ Unlock(){
 Lock(){
     LockB = "Unlock";
     Timerb = "Timer";
-    UnSitB="UnPlush";
+    UnPlushB="UnPlush";
     if (Kennel_Locked==FALSE) llPlaySound(door_lock,1);
     Kennel_Locked = TRUE;
     PetAccess = FALSE;
@@ -142,13 +142,27 @@ Lock(){
 MakePlush(){
     llMessageLinked(LINK_SET, RLV, "Plush", NULL_KEY);
     HasPlushPresent = TRUE;
+    MakeInvis(FALSE);
+
 }
 
 Unplush(){
-    UnSitB="-";
+    UnPlushB="-";
     llMessageLinked(LINK_SET, RLV, "UnPlush", NULL_KEY);
     llUnSit(llAvatarOnLinkSitTarget(poseballlink));
     HasPlushPresent = FALSE;
+    MakeInvis(TRUE);
+}
+
+MakeInvis(integer invis){
+    if (invis==TRUE){
+        llSetLinkAlpha(poseballlink,0,ALL_SIDES);
+        HideDollB="Show Doll"
+    }
+    else {
+        llSetLinkAlpha(poseballlink,1,ALL_SIDES);
+        HideDollB="Hide Doll"
+    }
 }
 
 capture(string name){
@@ -157,7 +171,7 @@ capture(string name){
         key sensorKey = llList2Key(sensor_keys, index);
         relay(sensorKey, "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
         Timerb = "Timer";
-        UnSitB="-";
+        UnPlushB="-";
     }
 }
 
@@ -165,15 +179,10 @@ relay(key avatar, string message){
     llSay(RELAY_CHANNEL, llGetObjectName() + "," + (string) avatar + "," + message);
 }
 
-makeInvis(){
-    float alpha=llList2Float(llGetLinkPrimitiveParams(5,[PRIM_COLOR,0]),1);
-    if (alpha==0.0) llSetLinkAlpha(5,1,0);
-    else llSetLinkAlpha(5,0,0);
-}
-
 default{
     on_rez(integer p){
         llResetScript();
+        MakeInvis(FALSE);
     }
     
     state_entry(){
@@ -283,9 +292,6 @@ default{
                     ownerMenu(door_operator);
                 else llInstantMessage(id,"You are not the owner.");
             }
-            else if (command == "Invis"){
-                makeInvis();
-            }
             else if(command == "Back..."){
                 dialogMenu(door_operator);
             }
@@ -320,6 +326,12 @@ default{
             }
             else if(command == "Reset" && id==llGetOwner()){
                 kennelReset();
+            }
+            else if(command == "Hide Doll" && id==llGetOwner()){
+                MakeInvis(TRUE);
+            }
+            else if(command == "Show Doll" && id==llGetOwner()){
+                MakeInvis(FALSE);
             }
             else if(message == "Timer"){
                 llMessageLinked(LINK_SET, TIMER,"Timer" + MSG_SEP + (string)door_operator, NULL_KEY);
@@ -372,7 +384,7 @@ default{
                 llSetTimerEvent(0);
                 Unlock();
                 PetKeys = [];
-                LockB = "-";
+                LockB = "Lock";
                 Timerb = "-";
             }
         }
