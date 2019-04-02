@@ -184,12 +184,12 @@ relay(key avatar, string message){
 default{
     on_rez(integer p){
         llResetScript();
-        MakeInvis(FALSE);
     }
     
     state_entry(){
         poseballlink = getLinkWithName("Plush");
         eyeslink = getLinkWithName("Eyes");
+        MakeInvis(FALSE);
         channelMaker2();
         ownerk = llGetOwner();
         linkCount=llGetObjectPrimCount(llGetKey());
