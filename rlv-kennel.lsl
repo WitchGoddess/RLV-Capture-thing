@@ -17,9 +17,10 @@ key door_operator;
 
 list PetKeys;
 
-list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n", "@emote=add","@edit=n","@rez=n","@addoutfit=n","@remoutfit=n","@fartouch:1=n", "@camdistmax:0=n"];
+//list rlv_hardcoded = ["@tplm=n","@tploc=n","@tplure=n","@sittp=n","@fly=n","@unsit=n","@sendchat=n", "@emote=add","@edit=n","@rez=n","@addoutfit=n","@remoutfit=n","@fartouch:1=n", "@camdistmax:0=n"];
+list rlv_hardcoded = ["@fly=n"];
 //Possible additions @camdistmax:0=n (force mouselook only), @camunlock=n (only disallow freecam), @chatnormal=n (can only whisper), @sendgesture=n (disallow gestures), @touchall=n (disallow touch at all), @touchworld=n (disallow touching anything but hud), @showworldmap=n, @showminimap=n, @showloc=n, "@shownames:"+ownerk+"=n", @showhovertextworld=n
-list rlv_remoutfit = ["@remoutfit=force", "detach=force"];
+list rlv_remoutfit = ["@remoutfit=force", "@detach=force"];
 list rlv_plush = ["@attachallover:.outfits/invis noodle/=force"];
 list rlv_unplush = ["@attachallover:.outfits/plush noodle/=force"];
 //Add outfit commands to go invisible on plush, and to plush avatar on unplush
@@ -178,7 +179,7 @@ default
             {
                 plushRLV();
             }
-            else if(command == "Unplush")
+            else if(command == "UnPlush")
             {
                 unplushRLV();
             }

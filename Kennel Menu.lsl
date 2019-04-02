@@ -53,8 +53,8 @@ list sensor_keys;
 list sensor_names;
 key door_operator = NULL_KEY;
 integer linkCount;
-integer poseballlink;
-integer eyeslink;
+integer poseballlink = -1;
+integer eyeslink = -1;
 
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
@@ -62,7 +62,7 @@ integer getLinkWithName(string name) {
     for (; i < x; ++i)
         if (llGetLinkName(i) == name) 
             return i; // Found it! Exit loop early with result
-    return -1; // No prim with that name, return -1.
+    return 0; // No prim with that name, return -1.
 }
 
 
@@ -399,13 +399,14 @@ default{
                 kennelReset();
             }
             if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
-                if (llSubStringIndex(llDumpList2String(AllowedPets, " "), llAvatarOnLinkSitTarget(poseballlink))){
+                if (llListFindList(AllowedPets, [(string)llAvatarOnLinkSitTarget(poseballlink)]) != (integer)-1){
                     llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
-                    MakePlush();
+                    llSleep(1); //If lock or makeplush fails to work, try added this pause. Unknown why it's hit or miss without it.
                     Lock();
+                    MakePlush();
                 }
                 else{
-                    llInstantMessage(llAvatarOnLinkSitTarget(poseballlink), "not belong here. Unsitted.");
+                    llInstantMessage(llAvatarOnLinkSitTarget(poseballlink), "You do not belong here. Unsitted.");
                     llUnSit(llAvatarOnLinkSitTarget(poseballlink));                    
                 }
             }

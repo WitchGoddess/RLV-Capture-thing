@@ -27,7 +27,7 @@ integer getLinkWithName(string name) {
     for (; i < x; ++i)
         if (llGetLinkName(i) == name) 
             return i; // Found it! Exit loop early with result
-    return -1; // No prim with that name, return -1.
+    return 0; // No prim with that name, return -1.
 }
 
 posCheck(){
@@ -62,9 +62,6 @@ posCheck(){
         integer status = llList2Integer(PetStatus, x);
         
         if(status == STATUS_NORMAL){
-            vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
-            pos = (pos - llGetRootPosition()) / llGetRootRotation();
-            
             if(llAvatarOnLinkSitTarget(poseballlink) == Pet){}
             else{
                 llSleep(5.0);
@@ -83,7 +80,6 @@ posCheck(){
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
             if(llAvatarOnLinkSitTarget(poseballlink)){
-                llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
             }
@@ -97,7 +93,6 @@ posCheck(){
                 }
                 else{
                     llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
-                    llWhisper(0,"Debug: Sit triggered"); 
                 }
             }
         }
