@@ -92,9 +92,9 @@ unplushRLV()
     for(x = 0; x < length; x++)
     {
         key Pet = llList2Key(PetKeys, x);
-        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_remoutfit, "|"));
+        llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_remoutfit, "|"));
         llSleep(1);
-        llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_unplush, "|"));
+        llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_unplush, "|"));
     }
 }
 
