@@ -20,7 +20,7 @@ key door_lock="4a23b467-2e4d-d783-3643-6fe1fe4eb179";
 key door_unlock="e5e01091-9c1f-4f8c-8486-46d560ff664f";
 
 // HardCoded list of allowed pets //
-list AllowedPets = [(key)UUID of pet, (key)UUID of pet]
+list AllowedPets = [(key)"29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"]
 
 string displayTime;
 
