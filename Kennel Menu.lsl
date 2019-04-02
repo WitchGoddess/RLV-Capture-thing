@@ -410,7 +410,7 @@ default{
                     llUnSit(llAvatarOnLinkSitTarget(poseballlink));                    
                 }
             }
-            else if (HasPlushPresent==TRUE && Plush_Locked==FALSE && llListFindList(AllowedPets, [(string)LastSitter]) != (integer-1)){
+            else if (HasPlushPresent==TRUE && Plush_Locked==FALSE && llListFindList(AllowedPets, [(string)LastSitter]) != (integer)-1){
                 Unplush();
             }
         }
