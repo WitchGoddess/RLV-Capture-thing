@@ -64,6 +64,7 @@ integer getLinkWithName(string name) {
 }
 
 integer poseballlink = getLinkWithName("Plush");
+integer eyeslink = getLinkWithName("Eyes");
 
 channelMaker2(){
     MENU_CH=-((integer)llFrand(100000))+999;
@@ -157,10 +158,12 @@ Unplush(){
 MakeInvis(integer invis){
     if (invis==TRUE){
         llSetLinkAlpha(poseballlink,0,ALL_SIDES);
+        llSetLinkAlpha(eyeslink,0,ALL_SIDES);
         HideDollB="Show Doll"
     }
     else {
         llSetLinkAlpha(poseballlink,1,ALL_SIDES);
+        llSetLinkAlpha(eyeslink,1,ALL_SIDES);
         HideDollB="Hide Doll"
     }
 }
