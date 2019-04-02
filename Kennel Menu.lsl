@@ -28,7 +28,7 @@ integer menuChannel;
 integer captureChannel;
 
 integer PetAccess = TRUE;
-integer Kennel_Locked = FALSE;
+integer Plush_Locked = FALSE;
 integer HasPlushPresent = FALSE;
 list PetKeys;
 
@@ -108,7 +108,7 @@ ownerMenu(key door_operator){
 Unlock(){
     LockB = "Lock";
     Timerb = "Timer";
-    Kennel_Locked = FALSE;
+    Plush_Locked = FALSE;
     Timer_Running = FALSE;
     PetAccess = TRUE;
     Key_Taken = FALSE;
@@ -126,8 +126,8 @@ Lock(){
     LockB = "Unlock";
     Timerb = "Timer";
     UnPlushB="UnPlush";
-    if (Kennel_Locked==FALSE) llPlaySound(door_lock,1);
-    Kennel_Locked = TRUE;
+    if (Plush_Locked==FALSE) llPlaySound(door_lock,1);
+    Plush_Locked = TRUE;
     PetAccess = FALSE;
     llMessageLinked(LINK_SET, SENSOR, "ON", NULL_KEY);
     llMessageLinked(LINK_SET, RLV, "Lock", NULL_KEY);
@@ -172,8 +172,6 @@ capture(string name){
     if (index != -1){
         key sensorKey = llList2Key(sensor_keys, index);
         relay(sensorKey, "@sit:" + (string)llGetLinkKey(poseballlink) + "=force");
-        Timerb = "Timer";
-        UnPlushB="-";
     }
 }
 
@@ -228,7 +226,7 @@ default{
                     dialogMenu(door_operator);
                 }
                 else{
-                    if(Kennel_Locked == TRUE)                        {
+                    if(Plush_Locked == TRUE)                        {
                         llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate.");
                         if(Timer_Running == TRUE){
                             llWhisper(0,"You will become animated again once timer expires.");
@@ -356,7 +354,7 @@ default{
                 key escapee = llList2Key(pets, 1);
                 
                 string escaped_pet = llKey2Name(escapee);
-                
+                Unplush();
                 if(Key_Taken == TRUE){
                     llInstantMessage(hasKey_key,escaped_pet + " has escaped!");
                 }
@@ -373,7 +371,7 @@ default{
                 dialogMenu(door_operator);
             }
             else if(str == "Locked"){
-                if(Kennel_Locked == FALSE){
+                if(Plush_Locked == FALSE){
                     llPlaySound(door_lock,1);
                 }
                 Lock();
@@ -410,7 +408,7 @@ default{
                     llUnSit(llAvatarOnLinkSitTarget(poseballlink));                    
                 }
             }
-            else if (HasPlushPresent==TRUE){
+            else if (HasPlushPresent==TRUE && Plush_Locked==FALSE){
                 Unplush();
             }
         }

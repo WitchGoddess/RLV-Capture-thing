@@ -117,7 +117,7 @@ default{
     state_entry(){
         poseballlink = getLinkWithName("Plush");
         llSleep(1);
-        llLinkSitTarget(poseballlink,<0.0,0.0,0.5>,ZERO_ROTATION);
+        //llLinkSitTarget(poseballlink,<0.0,0.0,0.5>,ZERO_ROTATION); //Use this if not using a different sitting script
     }    
         
     on_rez(integer start_param){
