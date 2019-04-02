@@ -65,7 +65,7 @@ posCheck(){
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
-            if(llAvatarOnLinkSitTarget(poseballlink) == Pet{}
+            if(llAvatarOnLinkSitTarget(poseballlink) == Pet){}
             else{
                 llSleep(5.0);
                 RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
@@ -82,7 +82,7 @@ posCheck(){
             petLoc = pos;
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
-            if(llAvatarOnLinkSitTarget(poseballlink){
+            if(llAvatarOnLinkSitTarget(poseballlink)){
                 llWhisper(0,"Debug: Sent: Relock" + "^ " + (string)Pet);
                 llWhisper(0,name+" is put back where it belongs.");
                 TempPetStatus = llListReplaceList(TempPetStatus, [0], x, x);
