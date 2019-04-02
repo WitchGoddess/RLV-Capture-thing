@@ -36,6 +36,7 @@ string MSG_SEP = "^";
 integer Seconds = 60;
 string PingFromRelay;
 key ownerk;
+key LastSitter;
 string OwnerB = "-";
 string LockB = "-";
 string Timerb = "-";
@@ -399,6 +400,7 @@ default{
             if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
                 if (llListFindList(AllowedPets, [(string)llAvatarOnLinkSitTarget(poseballlink)]) != (integer)-1){
                     llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
+                    LastSitter = llAvatarOnLinkSitTarget(poseballlink);
                     llSleep(1); //If lock or makeplush fails to work, try added this pause. Unknown why it's hit or miss without it.
                     Lock();
                     MakePlush();
@@ -408,7 +410,7 @@ default{
                     llUnSit(llAvatarOnLinkSitTarget(poseballlink));                    
                 }
             }
-            else if (HasPlushPresent==TRUE && Plush_Locked==FALSE){
+            else if (HasPlushPresent==TRUE && Plush_Locked==FALSE && llListFindList(AllowedPets, [(string)LastSitter]) != (integer-1)){
                 Unplush();
             }
         }
