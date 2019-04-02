@@ -110,8 +110,9 @@ posCheck(){
 getKeys(){
     PetKeys = [];
     PetStatus = [];
+    key Pet = llAvatarOnLinkSitTarget(poseballlink);
     if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
-        PetKeys += [llAvatarOnLinkSitTarget(poseballlink)];
+        PetKeys += [Pet];
         PetStatus += [0];
         string name = llKey2Name(Pet);
         llWhisper(0,name+" is back where it belongs.");
