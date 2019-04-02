@@ -16,8 +16,8 @@ integer CAPTURE_CHANNEL = 0;
 //-------------------//
 
 // Sound UUIDs //
-key door_lock="4a23b467-2e4d-d783-3643-6fe1fe4eb179";
-key door_unlock="e5e01091-9c1f-4f8c-8486-46d560ff664f";
+key door_lock="41bac678-f15d-3752-5c6b-f511edb8af35";
+key door_unlock="db367252-0201-a5dc-df12-53f6e48e3bd7";
 
 // HardCoded list of allowed pets //
 list AllowedPets = ["29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"];
