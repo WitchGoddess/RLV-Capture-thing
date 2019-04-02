@@ -3,7 +3,7 @@ integer SENSOR          = 136;
 integer TIMER           = 11009;
 integer BACK            = 11010;
 integer RLV             = 11012;
-integer KEY_LIST        = 11014;
+integer PetKey_Chan        = 11014;
 integer DOOR_BUTTON     = 11008;
 
 integer STATUS_NORMAL   = 0;
@@ -31,19 +31,16 @@ integer getLinkWithName(string name) {
 }
 
 posCheck(){
-    integer length = llGetListLength(PetKeys);
-    if(length != (integer)0){
+    if(Pet != NULL_KEY){
         if(TimerRunning == "Running"){
-            integer AVStat = llListFindList(PetStatus, [0]);
-            if(AVStat == (integer)-1){
+            if(PetStatus == (integer)-1){
                 llMessageLinked(LINK_SET, TIMER, "Pause", NULL_KEY);
                 llWhisper(0,"Timer Paused.");
                 TimerRunning = "Paused";
             }
         }
         else if(TimerRunning == "Paused"){
-            integer AVStat = llListFindList(PetStatus, [0]);
-            if(AVStat != (integer)-1){
+            if(PetStatus != (integer)-1){
                 llMessageLinked(LINK_SET, TIMER, "Resume", NULL_KEY);
                 llWhisper(0,"Timer Resumed.");
                 TimerRunning = "Running";
@@ -51,17 +48,13 @@ posCheck(){
         }
     }
     integer x;
-    TempPetKeys = [];
+    TempPet = NULL_KEY;
     TempPetStatus = [];
-    TempPetKeys = PetKeys;
+    TempPet = Pet;
     TempPetStatus = PetStatus;
-    
-    for (x = 0; x < length; x++){
-        key Pet = llList2Key(PetKeys, x);
         string name = llKey2Name(Pet);
-        integer status = llList2Integer(PetStatus, x);
-        
-        if(status == STATUS_NORMAL){
+
+        if(PetStatus == STATUS_NORMAL){
             if(llAvatarOnLinkSitTarget(poseballlink) == Pet){}
             else{
                 llSleep(5.0);
@@ -69,11 +62,11 @@ posCheck(){
                 RequestAV += [Pet];
             }
         }
-        else if(status == STATUS_OFFLINE){
+        else if(PetStatus == STATUS_OFFLINE){
             RequestID += [llRequestAgentData(Pet, DATA_ONLINE)];
             RequestAV += [Pet];
         }
-        else if(status == STATUS_ESCAPED){   
+        else if(PetStatus == STATUS_ESCAPED){   
             vector pos = llList2Vector(llGetObjectDetails(Pet,[OBJECT_POS]), 0);
             vector zeroPos = <0.00000, 0.00000, 0.00000>;
             petLoc = pos;
@@ -88,7 +81,7 @@ posCheck(){
                     llMessageLinked(LINK_SET, SENSOR, "escaped," + (string)Pet, NULL_KEY);
                     llInstantMessage(Pet, "You have broken free from your toymode.");
                     llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet+",!release");
-                    TempPetKeys=llDeleteSubList(TempPetKeys, x, x);
+                    TempPet=NULL_KEY);
                     TempPetStatus=llDeleteSubList(TempPetStatus, x, x);
                 }
                 else{
@@ -96,34 +89,32 @@ posCheck(){
                 }
             }
         }
-    }
     
     PetStatus = [];
     PetStatus = llList2List(TempPetStatus,0,-1);
     TempPetStatus = [];
-    PetKeys = [];
-    PetKeys = llList2List(TempPetKeys,0,-1);
-    TempPetKeys =[];
-    llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
+    Pet = NULL_KEY;
+    Pet = TempPet;
+    TempPet =NULL_KEY;
+    llMessageLinked(LINK_SET, PetKey_Chan, (string)Pet), NULL_KEY);
 }
 
 getKeys(){
-    PetKeys = [];
+    Pet = NULL_KEY;
     PetStatus = [];
-    key Pet = llAvatarOnLinkSitTarget(poseballlink);
     if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
-        PetKeys += [Pet];
+        Pet = llAvatarOnLinkSitTarget(poseballlink);
         PetStatus += [0];
         string name = llKey2Name(Pet);
         llWhisper(0,name+" is back where it belongs.");
     }
-    llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
+    llMessageLinked(LINK_SET, PetKey_Chan, (string)Pet), NULL_KEY);
 }
 
-list TempPetKeys;
+key TempPet;
 list TempPetStatus;
 
-list PetKeys;
+list Pet;
 list PetStatus;
 
 default{
@@ -159,8 +150,7 @@ default{
     }
     
     timer(){
-        integer length = llGetListLength(PetKeys);
-        if(length == (integer)0){
+        if(Pet == NULL_KEY){
             llWhisper(0,"There's no plush toy. Unlocking.");
             llSetTimerEvent(0);
             llMessageLinked(LINK_SET, SENSOR, "TimerStopped", NULL_KEY);
@@ -183,18 +173,14 @@ default{
                 string message = llKey2Name(AV) + " is ";
                 if(online){
                     message += "online";
-                    list KeyofPet = [AV];
-                    integer AVpos = llListFindList(PetKeys, KeyofPet);
-                    if(AVpos != (integer)-1){
-                        PetStatus = llListReplaceList(PetStatus, [2], AVpos, AVpos);
+                    if(Pet != NULL_KEY){
+                        PetStatus = 2);
                     }
                 }
                 else{
                     message += "offline";
-                    list KeyofPet = [AV];
-                    integer AVpos = llListFindList(PetKeys, KeyofPet);
-                    if(AVpos != (integer)-1){
-                        PetStatus = llListReplaceList(PetStatus, [1], AVpos, AVpos);   
+                    if(Pet != NULL_KEY){
+                        PetStatus = 1;   
                     }
                 }
                 RequestID = llDeleteSubList(RequestID, x, x);

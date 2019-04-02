@@ -3,7 +3,7 @@ integer DOOR_BUTTON     = 11008;
 integer TIMER           = 11009;
 integer RCV_TIMER       = 11010;
 integer RLV             = 11012;
-integer KEY_LIST        = 11014;
+integer PetKey_Chan        = 11014;
 integer SENSOR          = 136;
 //-------------------------//
 
@@ -361,7 +361,7 @@ default{
                 }
             }
         }
-        else if(num == KEY_LIST){
+        else if(num == PetKey_Chan){
             PetKeys = llParseString2List(str, [","], []);
         }
         else if(num == RCV_TIMER){

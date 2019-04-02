@@ -2,7 +2,7 @@
 //-----Link Channels-----//
 integer RLV             = 11012;
 integer BACK            = 11013;
-integer KEY_LIST        = 11014;
+integer PetKey_Chan        = 11014;
 
 //-----Channels-----//
 integer RELAY_CHANNEL = -1812221819;
@@ -199,7 +199,7 @@ default
                 llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)target + ","+ llDumpList2String(rlv_hardcoded, "|"));
             }
         }
-        else if(num == KEY_LIST)
+        else if(num == PetKey_Chan)
         {
             //llOwnerSay("Key list " + str);
             PetKeys = llParseString2List(str, [","], []);
