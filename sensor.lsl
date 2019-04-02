@@ -19,6 +19,8 @@ key primForce = NULL_KEY;
 vector petLoc;
 vector offset = <0.0,0.0,1.0>;
 
+integer poseballlink;
+
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
     integer x = llGetNumberOfPrims() + i; // [0, 1) or [1, llGetNumberOfPrims()]
@@ -27,8 +29,6 @@ integer getLinkWithName(string name) {
             return i; // Found it! Exit loop early with result
     return -1; // No prim with that name, return -1.
 }
-
-integer poseballlink = getLinkWithName("Plush");
 
 posCheck(){
     integer length = llGetListLength(PetKeys);
@@ -120,6 +120,7 @@ list PetStatus;
 
 default{
     state_entry(){
+        integer poseballlink = getLinkWithName("Plush");
         llSleep(1);
         llLinkSitTarget(poseballlink,<0.0,0.0,0.5>,ZERO_ROTATION);
     }    

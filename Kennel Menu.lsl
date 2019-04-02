@@ -20,7 +20,7 @@ key door_lock="4a23b467-2e4d-d783-3643-6fe1fe4eb179";
 key door_unlock="e5e01091-9c1f-4f8c-8486-46d560ff664f";
 
 // HardCoded list of allowed pets //
-list AllowedPets = [(key)"29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"]
+list AllowedPets = ["29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"];
 
 string displayTime;
 
@@ -41,7 +41,7 @@ string LockB = "-";
 string Timerb = "-";
 string Keysb = "-";
 string UnPlushB="-";
-string HideDollB="-"
+string HideDollB="-";
 key hasKey_key;
 string hasKey;
 
@@ -53,6 +53,8 @@ list sensor_keys;
 list sensor_names;
 key door_operator = NULL_KEY;
 integer linkCount;
+integer poseballlink;
+integer eyeslink;
 
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
@@ -63,8 +65,6 @@ integer getLinkWithName(string name) {
     return -1; // No prim with that name, return -1.
 }
 
-integer poseballlink = getLinkWithName("Plush");
-integer eyeslink = getLinkWithName("Eyes");
 
 channelMaker2(){
     MENU_CH=-((integer)llFrand(100000))+999;
@@ -90,7 +90,7 @@ dialogMenu(key door_operator){
     llListenRemove(captureChannel);
     menuChannel = llListen( MENU_CH, "", door_operator, "");
     captureChannel = llListen( CAPTURE_CHANNEL, "", door_operator, "");
-    list KennelMenu = [LockB, OwnerB, Keysb, Timerb, "Capture", UnsitB];
+    list KennelMenu = [LockB, OwnerB, Keysb, Timerb, "Capture", UnPlushB];
     llDialog(door_operator, "Plush Toy Control Menu:\n\n(Menu will Timeout in 60 Seconds.)", KennelMenu, MENU_CH);
 }
 
@@ -136,7 +136,6 @@ Lock(){
         Key_Taken = FALSE;
         hasKey_key = NULL_KEY;
         hasKey = "";
-        llMessageLinked(LINK_SET, KEY, "key_available", NULL_KEY);
     }
 }
 
@@ -159,12 +158,12 @@ MakeInvis(integer invis){
     if (invis==TRUE){
         llSetLinkAlpha(poseballlink,0,ALL_SIDES);
         llSetLinkAlpha(eyeslink,0,ALL_SIDES);
-        HideDollB="Show Doll"
+        HideDollB="Show Doll";
     }
     else {
         llSetLinkAlpha(poseballlink,1,ALL_SIDES);
         llSetLinkAlpha(eyeslink,1,ALL_SIDES);
-        HideDollB="Hide Doll"
+        HideDollB="Hide Doll";
     }
 }
 
@@ -185,6 +184,8 @@ relay(key avatar, string message){
 default{
     on_rez(integer p){
         llResetScript();
+        integer poseballlink = getLinkWithName("Plush");
+        integer eyeslink = getLinkWithName("Eyes");
         MakeInvis(FALSE);
     }
     
@@ -309,7 +310,6 @@ default{
             else if(message == "Take Key"){
                 hasKey_key = door_operator;
                 hasKey = llKey2Name(door_operator);
-                llMessageLinked(LINK_SET, KEY, "key_taken", NULL_KEY);
                 llMessageLinked(LINK_SET, RLV, "key_taken" + "^" + (string)door_operator, NULL_KEY);
                 llWhisper(0,name + " has taken the key, only them or the owner can unlock it now (or if a timer is set, it will auto-unlock when the timer expires.)");
                 Key_Taken = TRUE;
@@ -318,7 +318,6 @@ default{
             }
             else if(message == "Return Key"){
                 string name = llKey2Name(door_operator);
-                llMessageLinked(LINK_SET, KEY, "key_available", NULL_KEY);
                 llMessageLinked(LINK_SET, RLV, "key_returned" + "^" + (string)door_operator, NULL_KEY);
                 llWhisper(0,name + " has returned the key, anyone unlock it if they choose.");
                 Key_Taken = FALSE;
@@ -351,7 +350,7 @@ default{
         if(num == SENSOR){
             list pets = llParseString2List(str, [","], []);
             string command = llList2String(pets, 0);
-            else if(command == "escaped"){
+            if(command == "escaped"){
                 list pets = llParseString2List(str, [","], []);
                 string command = llList2String(pets, 0);
                 key escapee = llList2Key(pets, 1);
@@ -400,14 +399,14 @@ default{
                 kennelReset();
             }
             if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
-                if (llAvatarOnLinkSitTarget(poseballlink) == llListFindList(AllowedPets,llAvatarOnLinkSitTarget(poseballlink)){
+                if (llSubStringIndex(llDumpList2String(AllowedPets, " "), llAvatarOnLinkSitTarget(poseballlink))){
                     llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
                     MakePlush();
                     Lock();
                 }
                 else{
-                    llUnSit(llAvatarOnLinkSitTarget(poseballlink))
-                    llWhisper(0,"Debug: "+name+" does not belong here. Unsitted.");
+                    llInstantMessage(llAvatarOnLinkSitTarget(poseballlink), "not belong here. Unsitted.");
+                    llUnSit(llAvatarOnLinkSitTarget(poseballlink));                    
                 }
             }
             else if (HasPlushPresent==TRUE){
