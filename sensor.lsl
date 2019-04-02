@@ -120,7 +120,7 @@ list PetStatus;
 
 default{
     state_entry(){
-        integer poseballlink = getLinkWithName("Plush");
+        poseballlink = getLinkWithName("Plush");
         llSleep(1);
         llLinkSitTarget(poseballlink,<0.0,0.0,0.5>,ZERO_ROTATION);
     }    

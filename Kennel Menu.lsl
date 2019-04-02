@@ -188,8 +188,8 @@ default{
     }
     
     state_entry(){
-        integer poseballlink = getLinkWithName("Plush");
-        integer eyeslink = getLinkWithName("Eyes");
+        poseballlink = getLinkWithName("Plush");
+        eyeslink = getLinkWithName("Eyes");
         channelMaker2();
         ownerk = llGetOwner();
         linkCount=llGetObjectPrimCount(llGetKey());
