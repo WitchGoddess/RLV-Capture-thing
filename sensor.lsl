@@ -107,6 +107,18 @@ posCheck(){
     llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
 }
 
+getKeys(){
+    PetKeys = [];
+    PetStatus = [];
+    if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
+        PetKeys += [llAvatarOnLinkSitTarget(poseballlink)];
+        PetStatus += [0];
+        string name = llKey2Name(Pet);
+        llWhisper(0,name+" is back where it belongs.");
+    }
+    llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
+}
+
 list TempPetKeys;
 list TempPetStatus;
 
@@ -133,7 +145,7 @@ default{
                 llSetTimerEvent(0);
             }
             else if(str == "getKeys"){
-                llSensor("", NULL_KEY, AGENT, 20, PI);
+                getKeys();
             }
             else if(str == "TimerStarted"){
                 TimerRunning = "Running";
@@ -191,22 +203,4 @@ default{
         }
         @done;
     }
-    
-    sensor(integer total_number){
-        PetKeys = [];
-        PetStatus = [];
-        integer x;
-        
-        for (x = 0; x < total_number; x++){
-            key Pet = llDetectedKey(x);
-            if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
-                PetKeys += [llDetectedKey(x)];
-                PetStatus += [0];
-                string name = llKey2Name(Pet);
-                llWhisper(0,name+" is back where it belongs.");
-            }
-        }
-        llMessageLinked(LINK_SET, KEY_LIST, llDumpList2String(PetKeys, ","), NULL_KEY);
-    }
-
 }
