@@ -32,7 +32,7 @@ integer captureChannel;
 integer PetAccess = TRUE;
 integer Plush_Locked = FALSE;
 integer HasPlushPresent = FALSE;
-list PetKeys;
+key Pet;
 
 string MSG_SEP = "^";
 integer Seconds = 60;
@@ -225,8 +225,7 @@ default{
         if(dist < 10.0 || llDetectedKey(0)==llGetOwner()){
             if(llDetectedKey(0) == ownerk){
                 OwnerB = "Setup";
-                integer rc = llListFindList(PetKeys, [(string)ownerk]);
-                if(rc == (integer)-1){
+                if((string)ownerk != (string)Pet){
                     door_operator = llDetectedKey(0);
                     dialogMenu(door_operator);
                 }
@@ -244,8 +243,7 @@ default{
                 }
             }
             else if(llDetectedKey(0) != ownerk){
-                integer pet = llListFindList(PetKeys, [(string)llDetectedKey(0)]);
-                if(pet != (integer)-1){
+                if((string)llDetectedKey(0) != (string)Pet){
                     if(PetAccess == TRUE){
                         door_operator = llDetectedKey(0);
                         dialogMenu(door_operator);
@@ -366,7 +364,7 @@ default{
             }
         }
         else if(num == PetKey_Chan){
-            PetKeys = llParseString2List(str, [","], []);
+            Pet = (key)str;
         }
         else if(num == RCV_TIMER){
             list messageList = llParseString2List(str, [MSG_SEP], []);
@@ -388,7 +386,7 @@ default{
             else if(str == "Unlock"){
                 llSetTimerEvent(0);
                 Unlock();
-                PetKeys = [];
+                Pet = NULL_KEY;
                 LockB = "Lock";
                 Timerb = "-";
             }
