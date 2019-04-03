@@ -143,10 +143,12 @@ Lock(){
 }
 
 MakePlush(){
+    llPlaySound(zip_plush_snd,1);
     llMessageLinked(LINK_SET, RLV, "Plush", NULL_KEY);
     HasPlushPresent = TRUE;
     MakeInvis(FALSE);
-    llPlaySound(zip_plush_snd,1);
+    llSleep(1.5); //added delay for sound before doing lock
+    Lock();
 
 }
 
@@ -156,7 +158,7 @@ Unplush(){
     llUnSit(llAvatarOnLinkSitTarget(poseballlink));
     HasPlushPresent = FALSE;
     MakeInvis(TRUE);
-    llPlaySound(zip_unplush_snd,1);
+    llPlaySound(unzip_plush_snd,1);
 }
 
 MakeInvis(integer invis){
@@ -341,7 +343,7 @@ default{
             }
             else if(command == "UnPlush"){
                 Unlock();
-                llSleep(1);
+                llSleep(1); //Delay between automatically unlocking and getting out of the plush
                 Unplush();
             }
         }
@@ -404,7 +406,6 @@ default{
                     llMessageLinked(LINK_SET, SENSOR, "getKeys", NULL_KEY);
                     LastSitter = llAvatarOnLinkSitTarget(poseballlink);
                     llSleep(1); //If lock or makeplush fails to work, try added this pause. Unknown why it's hit or miss without it.
-                    Lock();
                     MakePlush();
                 }
                 else{
