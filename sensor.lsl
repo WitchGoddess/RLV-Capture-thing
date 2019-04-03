@@ -104,7 +104,7 @@ getKeys(){
         Pet = llAvatarOnLinkSitTarget(poseballlink);
         PetStatus = 0;
         string name = llKey2Name(Pet);
-        llWhisper(0,name+" is back where it belongs.");
+        llWhisper(0,name+" is zipped up into the plush!");
     }
     llMessageLinked(LINK_SET, PetKey_Chan, (string)Pet, NULL_KEY);
 }
