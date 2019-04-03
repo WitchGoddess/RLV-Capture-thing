@@ -16,8 +16,10 @@ integer CAPTURE_CHANNEL = 0;
 //-------------------//
 
 // Sound UUIDs //
-key door_lock="41bac678-f15d-3752-5c6b-f511edb8af35";
-key door_unlock="db367252-0201-a5dc-df12-53f6e48e3bd7";
+key plush_lock_snd="4a23b467-2e4d-d783-3643-6fe1fe4eb179";
+key plush_unlock_snd="e5e01091-9c1f-4f8c-8486-46d560ff664f";
+key zip_plush_snd="41bac678-f15d-3752-5c6b-f511edb8af35";
+key unzip_plush_snd="db367252-0201-a5dc-df12-53f6e48e3bd7";
 
 // HardCoded list of allowed pets //
 list AllowedPets = ["29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"];
@@ -117,7 +119,7 @@ Unlock(){
     hasKey = "";
     Keysb = "-";
     UnPlushB="UnPlush";
-    llPlaySound(door_unlock,1);
+    llPlaySound(plush_unlock_snd,1);
     llMessageLinked(LINK_SET, TIMER,"Unlock", NULL_KEY);
     llMessageLinked(LINK_SET, SENSOR, "OFF", NULL_KEY);
     llMessageLinked(LINK_SET, RLV, "Unlock", NULL_KEY);
@@ -127,7 +129,7 @@ Lock(){
     LockB = "Unlock";
     Timerb = "Timer";
     UnPlushB="UnPlush";
-    if (Plush_Locked==FALSE) llPlaySound(door_lock,1);
+    if (Plush_Locked==FALSE) llPlaySound(plush_lock_snd,1);
     Plush_Locked = TRUE;
     PetAccess = FALSE;
     llMessageLinked(LINK_SET, SENSOR, "ON", NULL_KEY);
@@ -144,6 +146,7 @@ MakePlush(){
     llMessageLinked(LINK_SET, RLV, "Plush", NULL_KEY);
     HasPlushPresent = TRUE;
     MakeInvis(FALSE);
+    llPlaySound(zip_plush_snd,1);
 
 }
 
@@ -153,6 +156,7 @@ Unplush(){
     llUnSit(llAvatarOnLinkSitTarget(poseballlink));
     HasPlushPresent = FALSE;
     MakeInvis(TRUE);
+    llPlaySound(zip_unplush_snd,1);
 }
 
 MakeInvis(integer invis){
@@ -373,7 +377,7 @@ default{
             }
             else if(str == "Locked"){
                 if(Plush_Locked == FALSE){
-                    llPlaySound(door_lock,1);
+                    llPlaySound(plush_lock_snd,1);
                 }
                 Lock();
                 Timer_Running = TRUE;
