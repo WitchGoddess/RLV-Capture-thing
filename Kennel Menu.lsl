@@ -16,8 +16,8 @@ integer CAPTURE_CHANNEL = 0;
 //-------------------//
 
 // Sound UUIDs //
-key plush_lock_snd="4a23b467-2e4d-d783-3643-6fe1fe4eb179";
-key plush_unlock_snd="e5e01091-9c1f-4f8c-8486-46d560ff664f";
+key plush_lock_snd="dec9fb53-0fef-29ae-a21d-b3047525d312";
+key plush_unlock_snd="82fa6d06-b494-f97c-2908-84009380c8d1";
 key zip_plush_snd="41bac678-f15d-3752-5c6b-f511edb8af35";
 key unzip_plush_snd="db367252-0201-a5dc-df12-53f6e48e3bd7";
 
