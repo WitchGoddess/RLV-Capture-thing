@@ -19,7 +19,8 @@ integer CAPTURE_CHANNEL = 0;
 key plush_lock_snd="dec9fb53-0fef-29ae-a21d-b3047525d312";
 key plush_unlock_snd="82fa6d06-b494-f97c-2908-84009380c8d1";
 key zip_plush_snd="41bac678-f15d-3752-5c6b-f511edb8af35";
-key unzip_plush_snd="db367252-0201-a5dc-df12-53f6e48e3bd7";
+key unzip_plush_snd="e9a2470e-9d16-e5aa-515c-39f37fe9a2cb";
+//old unzip sound: db367252-0201-a5dc-df12-53f6e48e3bd7
 
 // HardCoded list of allowed pets //
 list AllowedPets = ["29f5f1c7-f330-4e2c-ba99-828ee4e8ea53"];
