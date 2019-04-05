@@ -155,6 +155,8 @@ MakePlush(){
 
 Unplush(){
     UnPlushB="-";
+    LockB = "-";
+    Timerb = "-";
     llMessageLinked(LINK_SET, RLV, "UnPlush", NULL_KEY);
     llUnSit(llAvatarOnLinkSitTarget(poseballlink));
     HasPlushPresent = FALSE;
