@@ -238,7 +238,7 @@ default{
                     if(Plush_Locked == TRUE)                        {
                         llInstantMessage(llDetectedKey(0), "You try to move but find yourself completely inanimate.");
                         if(Timer_Running == TRUE){
-                            llWhisper(0,"You will become animated again once timer expires.");
+                            llInstantMessage(llDetectedKey(0),"You will become animated again once timer expires.");
                         }
                     }
                     else{
@@ -258,7 +258,7 @@ default{
                         if(Timer_Running == TRUE)
                         {
                             timer_check();
-                            llWhisper(0,"You will become animated again once timer expires.");
+                            llInstantMessage(llDetectedKey(0),"You will become animated again once timer expires.");
                         }
                     }
                 }
@@ -307,9 +307,13 @@ default{
             }
             else if(command == "Lock"){
                 llInstantMessage(door_operator,"Touch the plush again for Lock, Timer and Key options.");
+                //llInstantMessage(door_operator,"You use the tiny gold key to lock the plush toy inanimate like a normal plush toy should be.") //Alternative to be private to user without saying anything to public *Flavor text
+                llWhisper(0,llKey2Name(door_operator)+" locks the plush toy keeping it in an inanimate state like a normal plush toy should be.") //*Flavor text
                 Lock();
             }
             else if(command == "Unlock"){
+                //llInstantMessage(door_operator,"You use the tiny gold key to unlock the plush toy allowing it to become animate.") //Alternative to be private to user without saying anything to public *Flavor text
+                llWhisper(0,llKey2Name(door_operator)+" unlocks the plush toy allowing it to become animate.") //*Flavor text
                 Unlock();
                 dialogMenu(door_operator);
             }
@@ -345,6 +349,8 @@ default{
                 llMessageLinked(LINK_SET, TIMER,"Timer" + MSG_SEP + (string)door_operator, NULL_KEY);
             }
             else if(command == "UnPlush"){
+                //llInstantMessage(door_operator,"You use the tiny gold key to make the plush toy become animate.") //Alternative to be private to user without saying anything to public *Flavor text
+                llWhisper(0,llKey2Name(door_operator)+" uses a tiny gold key on the plush toy making it become animate.") //*Flavor text
                 Unlock();
                 llSleep(1); //Delay between automatically unlocking and getting out of the plush
                 Unplush();
