@@ -246,7 +246,7 @@ default{
                 }
             }
             else if(llDetectedKey(0) != ownerk){
-                if((string)llDetectedKey(0) != (string)Pet){
+                if((string)llDetectedKey(0) == (string)Pet){
                     if(PetAccess == TRUE){
                         door_operator = llDetectedKey(0);
                         dialogMenu(door_operator);
