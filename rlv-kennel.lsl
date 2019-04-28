@@ -69,6 +69,8 @@ plushRLV()
         llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_remoutfit, "|"));
         llSleep(1);
         llSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_plush, "|"));
+        string name = llKey2Name(Pet);
+        llWhisper(0,name+" is zipped up into the plush!");  //Message shown when first zipped into plush *Flavor text
     }
 }
 
@@ -79,6 +81,8 @@ unplushRLV()
         llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_remoutfit, "|"));
         llSleep(1);
         llRegionSay(RELAY_CHANNEL, "BunchoCommands,"+(string)Pet + ","+ llDumpList2String(rlv_unplush, "|"));
+        string name = llKey2Name(Pet);
+        llWhisper(0,"The plush toy springs to life moving around on it's own."); //Message shown when 'unplush' triggered and pet stands up *Flavor text
     }
 }
 
