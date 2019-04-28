@@ -59,6 +59,8 @@ key door_operator = NULL_KEY;
 integer linkCount;
 integer poseballlink = -1;
 integer eyeslink = -1;
+integer horn1link = -1;
+integer horn2link = -1;
 
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
@@ -168,11 +170,15 @@ MakeInvis(integer invis){
     if (invis==TRUE){
         llSetLinkAlpha(poseballlink,0,ALL_SIDES);
         llSetLinkAlpha(eyeslink,0,ALL_SIDES);
+        llSetLinkAlpha(horn1link,0,ALL_SIDES);
+        llSetLinkAlpha(horn2link,0,ALL_SIDES);
         HideDollB="Show Doll";
     }
     else {
         llSetLinkAlpha(poseballlink,1,ALL_SIDES);
         llSetLinkAlpha(eyeslink,1,ALL_SIDES);
+        llSetLinkAlpha(horn1link,1,ALL_SIDES);
+        llSetLinkAlpha(horn2link,1,ALL_SIDES);
         HideDollB="Hide Doll";
     }
 }
@@ -197,6 +203,8 @@ default{
     state_entry(){
         poseballlink = getLinkWithName("Plush");
         eyeslink = getLinkWithName("Eyes");
+        horn1link = getLinkWithName("Horn1");
+        horn2link = getLinkWithName("Horn2");
         MakeInvis(FALSE);
         channelMaker2();
         ownerk = llGetOwner();
