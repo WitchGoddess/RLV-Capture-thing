@@ -72,7 +72,7 @@ posCheck(){
             pos = (pos - llGetRootPosition()) / llGetRootRotation();
             
             if(llAvatarOnLinkSitTarget(poseballlink)){
-                llWhisper(0,name+" is put back where it belongs.");
+                llSay(0,name+" has been put back where it belongs.");
                 TempPetStatus = 0;
             }
             else{
@@ -103,8 +103,8 @@ getKeys(){
     if (llAvatarOnLinkSitTarget(poseballlink)!=NULL_KEY){
         Pet = llAvatarOnLinkSitTarget(poseballlink);
         PetStatus = 0;
-        string name = llKey2Name(Pet);
-        llWhisper(0,name+" is zipped up into the plush!");
+        //string name = llKey2Name(Pet);
+        //llWhisper(0,name+" is zipped up into the plush!"); //Moved this text to when 'makeplush' happens so it doesn't go off every time pet comes online or escapes.
     }
     llMessageLinked(LINK_SET, PetKey_Chan, (string)Pet, NULL_KEY);
 }
