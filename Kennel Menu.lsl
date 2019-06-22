@@ -61,6 +61,8 @@ integer poseballlink = -1;
 integer eyeslink = -1;
 integer horn1link = -1;
 integer horn2link = -1;
+integer wingLlink = -1;
+integer wingRlink = -1;
 
 integer getLinkWithName(string name) {
     integer i = llGetLinkNumber() != 0;   // Start at zero (single prim) or 1 (two or more prims)
@@ -172,6 +174,8 @@ MakeInvis(integer invis){
         llSetLinkAlpha(eyeslink,0,ALL_SIDES);
         llSetLinkAlpha(horn1link,0,ALL_SIDES);
         llSetLinkAlpha(horn2link,0,ALL_SIDES);
+        llSetLinkAlpha(wingLlink,0,ALL_SIDES);
+        llSetLinkAlpha(wingRlink,0,ALL_SIDES);
         HideDollB="Show Doll";
     }
     else {
@@ -179,6 +183,8 @@ MakeInvis(integer invis){
         llSetLinkAlpha(eyeslink,1,ALL_SIDES);
         llSetLinkAlpha(horn1link,1,ALL_SIDES);
         llSetLinkAlpha(horn2link,1,ALL_SIDES);
+        llSetLinkAlpha(wingLlink,1,ALL_SIDES);
+        llSetLinkAlpha(wingRlink,1,ALL_SIDES);
         HideDollB="Hide Doll";
     }
 }
@@ -205,6 +211,8 @@ default{
         eyeslink = getLinkWithName("Eyes");
         horn1link = getLinkWithName("Horn1");
         horn2link = getLinkWithName("Horn2");
+        wingLlink = getLinkWithName("WingL");
+        wingRlink = getLinkWithName("WingR");
         MakeInvis(FALSE);
         channelMaker2();
         ownerk = llGetOwner();
