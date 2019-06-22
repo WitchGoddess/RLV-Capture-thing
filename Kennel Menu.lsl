@@ -211,8 +211,8 @@ default{
         eyeslink = getLinkWithName("Eyes");
         horn1link = getLinkWithName("Horn1");
         horn2link = getLinkWithName("Horn2");
-        wingLlink = getLinkWithName("WingL");
-        wingRlink = getLinkWithName("WingR");
+        wingLlink = getLinkWithName("wingL");
+        wingRlink = getLinkWithName("wingR");
         MakeInvis(FALSE);
         channelMaker2();
         ownerk = llGetOwner();
